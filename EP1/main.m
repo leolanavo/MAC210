@@ -7,38 +7,67 @@
 %   - v(11) - v(33) --> número;
 
 function main()
-    x = 10;
-    if (abs(mod(x,1)) != 0)
-        printf ("diabo\n");
-    endif
-    conv = conversion(x);
+    x = zeros(1,32);
+    conv = fpsum(x);
     num2str(conv)
-end
+endfunction
 
-% Recieves a number and convert it to the floating point
-% notation from the book
-function conv = conversion(x)
-    if (x < -127 || x > 128 || abs(mod(x, 1)) != 0)
-        printf("deu ruim\n");
-        return;
-    endif
+function ret = resum(num1, num2)
+    offset = compareEXP(num1, num2, ret);
+    ret = zeros(1, 32+offset);
 
-    x = x + 127;
-
-    if (x == 0)
-        for i = 2:9
-            conv(i) = 0;
+    if (offset >= 0)
+        for i = 10:32
+            ret(i+offset) = num2(i);
+            ret(i) = num1(i) + ret(i);
         endfor
-    elseif (x == 255)
-        for i = 2:9
-            conv(i) = 1;
-        endfor
-    else 
-        for i = 2:9
-            conv(11 - i) = abs(mod(x, 2));
-            x = x/2;
+    else
+        for i = 10:32
+            ret(i+offset) = num1(i);
+            ret(i) = num2(i) + ret(i);
         endfor
     endif
 
 endfunction
 
+function dif = expSetter(num1, num2)
+    expo1 = 0;
+    expo2 = 0;
+    
+    for i = 2:9
+        expo1 = expo1 + num1(i)*(10^(i-2));
+        expo2 = expo2 + num2(i)*(10^(i-2));
+    endfor
+
+    expo1 = bin2dec(num2str(expo1));
+    expo2 = bin2dec(num2str(expo2));
+    
+    dif = expo1 - expo2;
+    return dif;
+
+endfunction
+
+function signal = signalSetter(num1, num2, dif)
+    
+    sig1 = 0;
+    sig2 = 0;
+    
+    if (dif == 0)
+        for i 10:32
+            sig1 = sig1 + num1(i)*(10^(i-10));
+            sig2 = sig2 + num2(i)*(10^(i-10));
+        endfor
+        if (sig1 >= sig2)
+            signal = num1(1);
+        else
+            signal = num2(1);
+        endif
+    
+    elseif (dif > 0)
+        signal = num1(1);
+    
+    else
+        signal = num2(1);
+    endif
+
+endfunction
