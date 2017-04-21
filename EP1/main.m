@@ -16,7 +16,7 @@ function main()
     num2 = [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num5 = [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num3 = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    conv = resum(num2, num2);
+    conv = resum(num2, num3);
 endfunction
 
 % Recieves two numbers in the floating point notation
@@ -57,17 +57,18 @@ function ret = resum(num1, num2)
         endif
     endfor
     
-    ret(offset + 10) += 1;
-    ret(10) += 1;
+    ret(abs(offset) + 9) += 1;
+    if (offset == 0) ret(10) += 1;
+    endif
 
-    for i = 2:32 + abs(offset)
+    for i = 10:32
         if (ret(i) > 1)
             
-            if (ret(i) == 2) ret(i) = 1;
-            else ret(i) = 0;
+            if (ret(i) == 2) ret(i) = 0;
+            else ret(i) = 1;
             endif
             
-            if (i != 31 + abs(offset)) ret(i + 1) += 1;
+            if (i != 2) ret(i + 1) += 1;
             endif
         endif
     endfor
