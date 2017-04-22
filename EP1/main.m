@@ -1,16 +1,15 @@
 % 0 --> 0 00000000 00000000000000000000000
-%
 % 2 --> 0 10000000 00000000000000000000000
 % 3 --> 0 10000000 10000000000000000000000
-% 5 --> 0 10000001 01000000000000000000000      10     10       11
-% 7 --> 0 10000001 11000000000000000000000     +11    101     +101
-% 8 --> 0 10000011 00000000000000000000000 
-% 9 --> 0 10000010 00100000000000000000000 
-% i --> 0 11111111 11111111111111111111111     101    111     1000
-% Vetor de 32 posições v  
-%   - v(1) --> sinal;
-%   - v(2) - v(9) --> expoente;
-%   - v(10) - v(32) --> significando;
+% 5 --> 0 10000001 01000000000000000000000
+% 7 --> 0 10000001 11000000000000000000000
+% 8 --> 0 10000011 00000000000000000000000
+% 9 --> 0 10000010 00100000000000000000000
+% i --> 0 11111111 11111111111111111111111
+% 32 positions vector
+%   - v(1) --> signal;
+%   - v(2) - v(9) --> exponent;
+%   - v(10) - v(32) --> signify;
 
 function main()
     %       s |   exponent  |                signify                      |
@@ -18,18 +17,19 @@ function main()
     num1 = [0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num9 = [0,0,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num2 = [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    num3 = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num3 = [1,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num5 = [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num7 = [0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    conv = resum(num1, num9);
+    conv = resum(num2, num3);
 endfunction
 
-% Recieves two numbers in the floating point notation
-% and sums them, the result may not be in the floating
-% point notation at first
+% Recieves two numbers in the floating point notation 
+% within the normal interval and sums them, the result 
+% may not be in the floating point notation at first
 function ret = resum(num1, num2)
     offset = expDiff(num1, num2);
     ret = zeros(1, 32 + abs(offset));
+    ret(1) = signalSetter(num1, num2, offset);
     
     if (offset >= 0)
         minor = num2;
@@ -46,14 +46,18 @@ function ret = resum(num1, num2)
         ret(i + abs(offset)) = minor(i);
     endfor
 
-    carryout = 0;
-
+    % puts the hidden bit of the smallest number
+    % in right location
     if (offset != 0)
         ret(9 + abs(offset)) += 1;
+        carryout = 0;
     else 
         carryout = 1;
     endif
 
+    % sums the biggest number with the smallest, 
+    % but the smallest have been altered to fit
+    % the exponent of the biggest number
     for i = 32:-1:10
         ret(i) += major(i);
         
@@ -72,6 +76,7 @@ function ret = resum(num1, num2)
     
     carryout += 1;
 
+    % normalize the result of the sum
     if (carryout > 1)
         for i = 31 + abs(offset):-1:11
             ret(i) = ret(i-1);
@@ -84,6 +89,8 @@ function ret = resum(num1, num2)
         endif
     endif
     
+    % set the exponent of the result according to the
+    % biggest number exponent and the needed changes
     for i = 9:-1:2
         ret(i) += major(i);
         if (ret(i) > 1)
@@ -101,11 +108,12 @@ function ret = resum(num1, num2)
     
 endfunction
 
-function printVec(vec)
+% Recieves a vector and prints it according to
+% the format "<index> : <content>\n"
+function printVec(num1, num2, ret)
     for i = 1:length(vec)
         printf("%d : %d\n", i, vec(i));
     endfor
-    disp("...")
 endfunction
 
 % Recieves two numbers in the floating point notation,
@@ -140,16 +148,16 @@ function signal = signalSetter(num1, num2, dif)
     sig2 = 0;
     
     if (dif == 0)
-        for i = 10:32
-            sig1 = sig1 + num1(i)*(10^(i-10));
-            sig2 = sig2 + num2(i)*(10^(i-10));
+        for i = 32:-1:10
+            sig1 += num1(i)*(10^(32-i));
+            sig2 += num2(i)*(10^(32-i));
         endfor
         
         if (sig1 >= sig2) signal = num1(1);
         else signal = num2(1);
         endif
     
-    elseif (dif > 0)
+    elseif (dif >= 0)
         signal = num1(1);
     
     else
