@@ -4,7 +4,8 @@
 % 3 --> 0 10000000 10000000000000000000000
 % 5 --> 0 10000001 01000000000000000000000      10     10       11
 % 7 --> 0 10000001 11000000000000000000000     +11    101     +101
-% 8 --> 0 10000100 00000000000000000000000 
+% 8 --> 0 10000011 00000000000000000000000 
+% 9 --> 0 10000010 00100000000000000000000 
 % i --> 0 11111111 11111111111111111111111     101    111     1000
 % Vetor de 32 posições v  
 %   - v(1) --> sinal;
@@ -13,10 +14,14 @@
 
 function main()
     %       s |   exponent  |                signify                      |
+    num0 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num1 = [0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num9 = [0,0,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num2 = [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    num5 = [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num3 = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    conv = resum(num2, num3);
+    num5 = [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num7 = [0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    conv = resum(num1, num9);
 endfunction
 
 % Recieves two numbers in the floating point notation
@@ -25,7 +30,6 @@ endfunction
 function ret = resum(num1, num2)
     offset = expDiff(num1, num2);
     ret = zeros(1, 32 + abs(offset));
-    carryout = 0;
     
     if (offset >= 0)
         minor = num2;
@@ -42,7 +46,15 @@ function ret = resum(num1, num2)
         ret(i + abs(offset)) = minor(i);
     endfor
 
-    for i = 32:-1:2
+    carryout = 0;
+
+    if (offset != 0)
+        ret(9 + abs(offset)) += 1;
+    else 
+        carryout = 1;
+    endif
+
+    for i = 32:-1:10
         ret(i) += major(i);
         
         % set the carryout from the current digit sum
@@ -52,30 +64,48 @@ function ret = resum(num1, num2)
             else ret(i) = 1;
             endif
             
-            if (i != 2) ret(i - 1) += 1;
+            if (i != 10) ret(i - 1) += 1;
+            else carryout += 1;
             endif
         endif
     endfor
     
-    ret(abs(offset) + 9) += 1;
-    if (offset == 0) ret(10) += 1;
-    endif
+    carryout += 1;
 
-    for i = 10:32
+    if (carryout > 1)
+        for i = 31 + abs(offset):-1:11
+            ret(i) = ret(i-1);
+        endfor
+       
+        ret(9) = 1;
+
+        if (carryout == 2) ret(10) = 0;
+        else ret(10) = 1;
+        endif
+    endif
+    
+    for i = 9:-1:2
+        ret(i) += major(i);
         if (ret(i) > 1)
             
             if (ret(i) == 2) ret(i) = 0;
             else ret(i) = 1;
             endif
-            
-            if (i != 2) ret(i + 1) += 1;
+
+            if (i != 2) ret(i-1) += 1;
             endif
         endif
     endfor
+
+    printVec(ret);
     
-    for i = 1:32
-        printf("%d : %d\n", i, ret(i));
+endfunction
+
+function printVec(vec)
+    for i = 1:length(vec)
+        printf("%d : %d\n", i, vec(i));
     endfor
+    disp("...")
 endfunction
 
 % Recieves two numbers in the floating point notation,
@@ -98,7 +128,7 @@ function dif = expDiff(num1, num2)
     if (expo2 == 255) checkNaN(expo2, num2);
     endif
     
-    dif = expo1 - expo2;
+    dif = expo1 - expo2
 
 endfunction
 
