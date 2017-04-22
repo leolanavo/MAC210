@@ -22,8 +22,8 @@ function num_ret = sum(bin_a, bin_b)
 %  ||_ ocult bit
 %  |_ extra space to make the sum
   
-  significand_a = significand_b = zeros(1, 25);
-  significand_a(2) = significand_b(2) = 1;
+  num_ret = significand_a = significand_b = zeros(1, 25);
+  num_ret(2) = significand_a(2) = significand_b(2) = 1;
 
   [offset, exp_ret, comp] = compareExp(bin_a, bin_b);
 
@@ -97,6 +97,21 @@ function num_ret = sum(bin_a, bin_b)
     endfor
     
   endif
+
+  for i = 25:-1:2
+    num_ret(i) = significand_a(i) + significand_b(i);
+        
+    % set the carryout from the current digit sum
+    if (num_ret(i) > 1)
+            
+      if (num_ret(i) == 2) num_ret(i) = 0;
+      else num_ret(i) = 1;
+      endif
+            
+    num_ret(i - 1) += 1;
+            
+    endif
+  endfor
     
   bin_a
   bin_b
@@ -105,7 +120,7 @@ function num_ret = sum(bin_a, bin_b)
   significand_b
   G1
   G2
-  num_ret = 0
+  num_ret
 endfunction
 
 
