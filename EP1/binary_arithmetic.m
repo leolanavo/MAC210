@@ -14,15 +14,14 @@
 function binary_arithmetic()
     %       s |   exponent  |                significand                      |
     num0 = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num8 = [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1];
     num1 = [0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num9 = [0,0,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num2 = [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num3 = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num5 = [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num7 = [0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    num8 = [0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    conv = resub(num0, num3);
-    printVec(conv);
+    conv = reSub(num1, num8);
 endfunction
 
 % Recieves two vectors that represent numbers in the 
@@ -30,9 +29,10 @@ endfunction
 % and sums them, the result may not be in the floating 
 % point notation at first
 function ret = reSum(num1, num2)
-    offset = expDiff(num1, num2);
+    offset = expDiff(num1, num2)
     ret = zeros(1, 32 + abs(offset));
     ret(1) = signalSetter(num1, num2, offset);
+    carryout = 1;
     
     if (offset >= 0)
         minor = num2;
@@ -53,10 +53,13 @@ function ret = reSum(num1, num2)
     % in right location
     if (offset != 0)
         ret(9 + abs(offset)) = 1;
-        carryout = 0;
     else 
-        carryout = 1;
+        carryout += 1;
     endif
+    
+    disp("----------");
+    disp("cópia")
+    printVec(ret);
 
     % sums the biggest number with the smallest, 
     % but the smallest have been altered to fit
@@ -77,8 +80,10 @@ function ret = reSum(num1, num2)
         endif
     endfor
     
-    carryout += 1;
-
+    disp("----------");
+    disp("soma")
+    printVec(ret);
+    
     % normalize the result of the sum
     if (carryout > 1)
         for i = 31 + abs(offset):-1:11
@@ -91,6 +96,10 @@ function ret = reSum(num1, num2)
         else ret(10) = 1;
         endif
     endif
+    
+    disp("----------");
+    disp("normalização")
+    printVec(ret);
     
     % set the exponent of the result according to the
     % biggest number exponent and the needed changes
@@ -106,9 +115,11 @@ function ret = reSum(num1, num2)
             endif
         endif
     endfor
-
-    printVec(ret);
     
+    disp("----------");
+    disp("expoente")
+    printVec(ret);
+
 endfunction
 
 % Recieves two numbers in the floating point notation 
@@ -122,7 +133,7 @@ function ret = reSub(num1, num2)
         return
     endif
 
-    offset = expDiff(num1, num2);
+    offset = expDiff(num1, num2)
     ret = zeros(1, 32 + abs(offset));
     
     num2(1) = !num2(1);
@@ -138,7 +149,7 @@ function ret = reSub(num1, num2)
         ret = num1;
         return;
     endif
-    
+
     % Set which is the biggest and smallest number
     % and copy the smallest significand to the result 
     % with an offset vector.
@@ -147,7 +158,7 @@ function ret = reSub(num1, num2)
         major = num1;
         
         for i = 10:32 + abs(offset)
-            ret(i + offset) = minor(i);
+            ret(i) = minor(i);
         endfor
     else
         minor = num1;
@@ -159,6 +170,10 @@ function ret = reSub(num1, num2)
     endif
 
     carryout = 1;
+    
+    disp("----------");
+    disp("cópia")
+    printVec(ret);
 
     % Sums the numbers, with the second number
     % being negated, according to the 2's complement
@@ -175,6 +190,10 @@ function ret = reSub(num1, num2)
             endif
         endif
     endfor
+    
+    disp("----------");
+    disp("soma");
+    printVec(ret);
 
     % Normalize the result
     if (carryout == 1 || carryout == 2)
@@ -224,6 +243,9 @@ function ret = reSub(num1, num2)
             ret(i) = major(i);
         endfor
     endif
+    
+    disp("----------");
+    disp("resultado")
     printVec(ret);
     
 endfunction
