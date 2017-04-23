@@ -84,18 +84,124 @@ O programa possui 9 funções:
 
         Após a soma, avalia a flag \textit{carryout} para normalizar o vetor.
         Caso, a flag seja maior que $1$, soma-se $1$ à \textit{bitstring} do
-        número maior. Caso seja igual a $2$, o primeiro bit do significando
-        passa a ser $0$, caso seja igual a $3$, o primeiro bit do significando
-        torna-se $1$.
+        número maior, e desloca o vetor um \textit{bit} para trás. Caso seja 
+        igual a $2$, o primeiro bit do significando passa a ser $0$, caso seja 
+        igual a $3$, o primeiro bit do significando torna-se $1$.
 
 \end{itemize}
 
 \subsection*{Exemplos}
 \begin{itemize}
-  \item $2 \oplus 3$
-  \item $1 \oplus 2^{-24} $ 
-  \item $1 \ominus {(1.11111111111111111111111)}_{2} \times 2^{-1}$
-  \item $1 \ominus {(1.00000000000000000000001)}_{2} \times 2^{-25}$
+\item $2 \oplus 3$
+    \begin{itemize}
+        
+    \item \textit{estado inicial} \\    
+    $2 = {0}\ {10000000}\ {00000000000000000000000}$ \\
+    $3 = {0}\ {10000000}\ {10000000000000000000000}$ \\
+    \textit{ret} $= {0}\ {00000000}\ {00000000000000000000000}$ \\
+
+    \item \textit{offset} \\
+    ${10000000}\ - {10000000} = 0$
+    
+    \item \textit{define o sinal} \\
+    $ 3 > 2$, logo \textit{ret} $= {0}\ {00000000}\ {00000000000000000000000}$
+      
+    \item \textit{cópia com offset} \\
+    \textit{ret} $= {0}\ {00000000}\ {00000000000000000000000}$
+      
+    \item \textit{soma com o maior} \\
+    \textit{ret} $= {0}\ {00000000}\ {10000000000000000000000}$
+
+    \item \textit{normalização} \\
+    \textit{ret} $= {0}\ {00000001}\ {01000000000000000000000}$
+    
+    \item \textit{cópia do expoente com alterações} \\
+    \textit{ret} $= {0}\ {10000001}\ {01000000000000000000000}$
+    \end{itemize}
+
+\item $1 \oplus 2^{-24} $ 
+    \begin{itemize}
+        
+    \item \textit{estado inicial} \\    
+    $1 = {0}\ {01111111}\ {00000000000000000000000}$ \\
+    $2^{-24} = {0}\ {01100111}\ {10000000000000000000000}$ \\
+    \textit{ret} $= {0}\ {00000000}\ {0000000000000000000000000000000000000000000000}$ \\
+
+    \item \textit{offset} \\
+    ${01111111}\ - {01100111} = 24$
+    
+    \item \textit{define o sinal} \\
+    $1 > 2^{-24}$, logo \\\
+    textit{ret} $= {0}\ {00000000}\ {0000000000000000000000000000000000000000000000}$ 
+     
+    \item \textit{cópia com offset} \\
+    \textit{ret} $= {0}\ {00000000}\ {0000000000000000000000010000000000000000000000}$
+      
+    \item \textit{soma com o maior} \\
+    \textit{ret} $= {0}\ {00000000}\ {0000000000000000000000010000000000000000000000}$
+    \textit{carryout} $= 1$
+
+    \item \textit{normalização} \\
+    \textit{ret} $= {0}\ {00000000}\ {0000000000000000000000010000000000000000000000}$
+    
+    \item \textit{cópia do expoente com alterações} \\
+    \textit{ret} $= {0}\ {01111111}\ {0000000000000000000000010000000000000000000000}$
+    \end{itemize}
+
+\item $1 \ominus {(1.11111111111111111111111)}_{2} \times 2^{-1}$
+    \begin{itemize}
+        
+    \item \textit{estado inicial} \\    
+    $1 = {0}\ {01111111}\ {00000000000000000000000}$ \\
+    ${(1.11111111111111111111111)}_{2} \times 2^{-1} = {0}\ {01111110}\ {11111111111111111111111}$ \\
+    \textit{ret} $= {0}\ {00000000}\ {000000000000000000000000}$
+
+    \item \textit{offset} \\
+    ${01111111}\ - {01111110} = 24$
+    
+    \item \textit{define o sinal} \\
+    $1 > {(1.11111111111111111111111)}_{2} \times 2^{-1}$, logo \\ 
+    \textit{ret} $= {0}\ {00000000}\ {000000000000000000000000}$ \\
+      
+    \item \textit{cópia com offset} \\
+    \textit{ret} $= {0}\ {00000000}\ {000000000000000000000001}$ \\
+      
+    \item \textit{soma com o maior} \\
+    \textit{ret} $= {0}\ {00000000}\ {000000000000000000000001}$ \\
+
+    \item \textit{normalização} \\
+    \textit{ret} $= {0}\ {0000000-1}\ {000000000000000000000001}$ \\
+    
+    \item \textit{cópia do expoente com alterações} \\
+    \textit{ret} $= {0}\ {01111110}\ {000000000000000000000001}$ \\
+    \end{itemize}
+
+\item $1 \ominus {(1.00000000000000000000001)}_{2} \times 2^{-25}$
+    \begin{itemize}
+        
+    \item \textit{estado inicial} \\    
+    $1 = {0}\ {01111111}\ {00000000000000000000000}$ \\
+    ${(1.00000000000000000000001)}_{2} \times 2^{-25} = {0}\ {01100110}\ {10000000000000000000001}$ \\
+    \textit{ret} $= {0}\ {00000000}\ {00000000000000000000000000000000000000000000000}$ \\
+
+\item \textit{offset} $ {01111111} - {01100110} = 25$
+    
+    \item \textit{define o sinal} \\
+    $1\ > {(1.00000000000000000000001)}_{2} \times 2^{-25}$, logo \\
+    \textit{ret} $= {0}\ {00000000}\ {00000000000000000000000000000000000000000000000}$ \\
+      
+    \item \textit{cópia com offset} \\
+    \textit{ret} $= {0}\ {00000000}\ {11111111111111101001100011111111111111111111111}$ \\
+      
+    \item \textit{soma com o maior} \\
+    \textit{ret} $= {0}\ {00000000}\ {11111111111111101001100011111111111111111111111}$ \\
+
+    \item \textit{normalização} \\
+    \textit{ret} $= {0}\ {0000000-1}\ {11111111111111101001100011111111111111111111111}$ \\
+    
+    \item \textit{cópia do expoente com alterações} \\
+    \textit{ret} $= {0}\ {01111110}\ {11111111111111101001100011111111111111111111111}$ \\
+    \end{itemize}
 \end{itemize}
 
 \begin{flushleft}
