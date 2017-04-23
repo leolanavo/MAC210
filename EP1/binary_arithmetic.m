@@ -57,10 +57,6 @@ function ret = reSum(num1, num2)
         carryout += 1;
     endif
     
-    disp("----------");
-    disp("cópia")
-    printVec(ret);
-
     % sums the biggest number with the smallest, 
     % but the smallest have been altered to fit
     % the exponent of the biggest number
@@ -80,10 +76,6 @@ function ret = reSum(num1, num2)
         endif
     endfor
     
-    disp("----------");
-    disp("soma")
-    printVec(ret);
-    
     % normalize the result of the sum
     if (carryout > 1)
         for i = 31 + abs(offset):-1:11
@@ -96,10 +88,6 @@ function ret = reSum(num1, num2)
         else ret(10) = 1;
         endif
     endif
-    
-    disp("----------");
-    disp("normalização")
-    printVec(ret);
     
     % set the exponent of the result according to the
     % biggest number exponent and the needed changes
@@ -116,10 +104,6 @@ function ret = reSum(num1, num2)
         endif
     endfor
     
-    disp("----------");
-    disp("expoente")
-    printVec(ret);
-
 endfunction
 
 % Recieves two numbers in the floating point notation 
