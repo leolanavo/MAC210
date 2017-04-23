@@ -20,8 +20,28 @@ function binary_arithmetic()
     num2 = [0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num3 = [0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
     num5 = [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    num7 = [0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
-    conv = reSub(num1, num8);
+    num7 = [0,1,0,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]; 
+    num1_0 = [0,0,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num2_24 = [0,0,1,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    num1_23_1 = [0,0,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+    num2_25 = [0,0,1,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1];
+
+    disp("Example 1:");
+    example1 = reSum(num2, num3);
+    printf("\n");
+
+    disp("Example 2:");
+    example2 = reSum(num1, num2_24);
+    printf("\n");
+
+    disp("Example 3:");
+    example3 = reSub (num1_0, num1_23_1);
+    printf("\n");
+
+    disp("Example 4:");
+    example4 = reSub(num1, num2_25);
+    printf("\n");
+
 endfunction
 
 % Recieves two vectors that represent numbers in the 
@@ -29,7 +49,7 @@ endfunction
 % and sums them, the result may not be in the floating 
 % point notation at first
 function ret = reSum(num1, num2)
-    offset = expDiff(num1, num2)
+    offset = expDiff(num1, num2);
     ret = zeros(1, 32 + abs(offset));
     ret(1) = signalSetter(num1, num2, offset);
     carryout = 1;
@@ -103,7 +123,22 @@ function ret = reSum(num1, num2)
             endif
         endif
     endfor
-    
+	    
+    precision = precisionBits(ret);
+    [result_up, result_down, result_zero, result_near] = round(precision);
+
+    disp("Round Up")
+    printVec(result_up);
+
+    disp("Round Down")
+    printVec(result_down);
+
+    disp("Round towards Zero")
+    printVec(result_zero);
+
+    disp("Round to the Nearest")
+    printVec(result_near);
+
 endfunction
 
 % Recieves two numbers in the floating point notation 
@@ -117,7 +152,7 @@ function ret = reSub(num1, num2)
         return
     endif
 
-    offset = expDiff(num1, num2)
+    offset = expDiff(num1, num2);
     ret = zeros(1, 32 + abs(offset));
     
     num2(1) = !num2(1);
@@ -154,10 +189,6 @@ function ret = reSub(num1, num2)
     endif
 
     carryout = 1;
-    
-    disp("----------");
-    disp("cópia")
-    printVec(ret);
 
     % Sums the numbers, with the second number
     % being negated, according to the 2's complement
@@ -175,9 +206,6 @@ function ret = reSub(num1, num2)
         endif
     endfor
     
-    disp("----------");
-    disp("soma");
-    printVec(ret);
 
     % Normalize the result
     if (carryout == 1 || carryout == 2)
@@ -212,8 +240,7 @@ function ret = reSub(num1, num2)
         endif 
         
         expo -= count;
-        disp(expo);
-        expo = dec2bin(expo)
+        expo = dec2bin(expo);
         
         i = 9;
         j = length(expo);
@@ -228,9 +255,20 @@ function ret = reSub(num1, num2)
         endfor
     endif
     
-    disp("----------");
-    disp("resultado")
-    printVec(ret);
+    precision = precisionBits(ret);
+    [result_up, result_down, result_zero, result_near] = round(precision);
+
+    disp("Round Up")
+    printVec(result_up);
+
+    disp("Round Down")
+    printVec(result_down);
+
+    disp("Round towards Zero")
+    printVec(result_zero);
+
+    disp("Round to the Nearest")
+    printVec(result_near);
     
 endfunction
 
@@ -238,8 +276,9 @@ endfunction
 % the format "<index> : <content>\n"
 function printVec(ret)
     for i = 1:length(ret)
-        printf("%d : %d\n", i, ret(i));
+        printf("%d ", ret(i));
     endfor
+    printf("\n");
 endfunction
 
 % Recieves two vectors that represent numbers in the floating 
@@ -351,7 +390,7 @@ endfunction
 % number of bits. Returns the vector in the floating point
 % notation with two guard bits and one sticky bit.
 function prec = precisionBits(num)
-    prec = zeros (1, 35)
+    prec = zeros (1, 35);
 
     for i = 1:32
         prec(i) = num(i);
@@ -382,4 +421,103 @@ function prec = precisionBits(num)
     else
         prec(35) = 0;
     endif
+endfunction
+
+function [r_up, r_down, r_zero, r_near] = round (num) 
+    r_up = r_down = r_zero = r_near = zeros(1, 32);
+    equal_up = equal_down = 0;
+    max_flag = 1;
+    min_flag = 1;
+
+    INF = [0,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    _INF = [1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    NMAX = [0,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+    NMIN = [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    ZERO = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+    
+
+    for i = 1:32
+        r_down(i) = num(i);
+        r_up(i) = num(i);
+        
+        if (num(i) != 1)
+            max_flag = 0;
+        endif
+
+        if (num(i) != 0)
+            min_flag = 0;
+        endif 
+    endfor
+  
+    if (num(33) == 1 || num(34) == 1 || num(35) == 1)
+        r_up(32) += 1;
+        for i = 32:-1:3
+            if (r_up(i) == 2) 
+                r_up(i) = 0;
+                r_up(i - 1) += 1;
+            endif    
+        endfor
+
+        if(r_up(2) == 2)
+            r_up = INF;
+        else
+           r_up(2) = num(2);
+           r_up(1) = num(1);
+        endif
+        
+    endif
+
+    if (max_flag == 1)
+        if (num(1) == 0)
+            r_up = INF;
+            r_down = NMAX;
+        else
+            r_up = NMAX;
+            r_up(1) = 1;
+            r_down = _INF
+        endif
+    endif
+
+    if(min_flag == 1)
+        if (num(1) == 0)
+            r_up = NMIN;
+            r_down = ZERO;
+        else
+            r_up = ZERO;
+            r_up(1) = 1;
+            r_down = NMIN;
+            r_down(1) = 1;
+        endif
+    endif
+
+    if (num(1) == 0)
+        r_zero = r_down;
+    else
+        r_zero = r_up;
+    endif
+
+    for i = 10:32
+        if(r_up(i) == num(i))
+            equal_up++;
+        endif
+        
+        if (r_down(i) == num(i))
+            equal_down++;            
+        endif
+    endfor
+  
+    if (equal_up > equal_down)      
+        r_near = r_up;
+    elseif (equal_down > equal_up)
+        r_near = r_down;
+    else
+        if (r_down(32) == 1)
+            r_near = r_up;
+        else
+            r_near = r_down;
+        endif
+    endif
+
+    
+
 endfunction
