@@ -119,6 +119,12 @@ O programa possui 9 funções:
     \textit{ret} $= {0}\ {10000001}\ {01000000000000000000000}$
     \end{itemize}
 
+    \item \textit{Como o resultado cabe em formato de floating, todos os rounds serão:} \\
+    \textit{ret} $= {0}\ {10000001}\ {01000000000000000000000}$
+    \end{itemize}
+
+
+
 \item $1 \oplus 2^{-24} $ 
     \begin{itemize}
         
@@ -146,6 +152,14 @@ O programa possui 9 funções:
     
     \item \textit{cópia do expoente com alterações} \\
     \textit{ret} $= {0}\ {01111111}\ {0000000000000000000000010000000000000000000000}$
+    \end{itemize}
+
+    \item \textit{Round Up} \\
+    \textit{ret} $= {0}\ {01111111}\ {00000000000000000000001}$
+    \end{itemize}
+
+    \item \textit{Round Down, Round towards Zero, Round to the Nearest} \\
+    \textit{ret} $= {0}\ {01111111}\ {00000000000000000000000}$
     \end{itemize}
 
 \item $1 \ominus {(1.11111111111111111111111)}_{2} \times 2^{-1}$
@@ -231,6 +245,20 @@ monitor desta matéria no oferecimento do ano passado) com os resultados obtidos
 pela \textit{newton\_basins ()}.
 
 
-% \includegraphics[width=13cm, height=13cm]{newton_basins.png}
+\begin{figure}[h]
+\caption{Exemplo de fractal da função $x^{3} - 1$}
+\centering
+\includegraphics[width=13cm, height=13cm]{newton_basins.png}
+\end{figure}
+
+
+%Figura 2: Exemplo de fractal da função x^5 - 1 (legenda de cima)
+
+%Pode-se notar os pontos marcados em vermelho na imagem, que são os pontos que não convergem.(comentário depois das figuras 1 e 2)
+
+%Figura 3: Fractal da função de x^5 - 1 com número de iterações igual a 10. (legenda de cima)
+
+%Também é fácil notar que a quantidade de pontos que não convergem aumenta devido à mudança do
+%critério de parada. (comentário depois)
 
 \end{document}
