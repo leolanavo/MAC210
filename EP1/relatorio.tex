@@ -117,13 +117,10 @@ O programa possui 9 funções:
     
     \item \textit{cópia do expoente com alterações} \\
     \textit{ret} $= {0}\ {10000001}\ {01000000000000000000000}$
-    \end{itemize}
 
     \item \textit{Como o resultado cabe em formato de floating, todos os rounds serão:} \\
     \textit{ret} $= {0}\ {10000001}\ {01000000000000000000000}$
     \end{itemize}
-
-
 
 \item $1 \oplus 2^{-24} $ 
     \begin{itemize}
@@ -152,11 +149,9 @@ O programa possui 9 funções:
     
     \item \textit{cópia do expoente com alterações} \\
     \textit{ret} $= {0}\ {01111111}\ {0000000000000000000000010000000000000000000000}$
-    \end{itemize}
 
     \item \textit{Round Up} \\
     \textit{ret} $= {0}\ {01111111}\ {00000000000000000000001}$
-    \end{itemize}
 
     \item \textit{Round Down, Round towards Zero, Round to the Nearest} \\
     \textit{ret} $= {0}\ {01111111}\ {00000000000000000000000}$
@@ -188,6 +183,12 @@ O programa possui 9 funções:
     
     \item \textit{cópia do expoente com alterações} \\
     \textit{ret} $= {0}\ {01111110}\ {000000000000000000000001}$ \\
+    
+    \item \textit{Round Up} \\
+    \textit{ret} $= {0}\ {01111110}\ {00000000000000000000001}$
+
+    \item \textit{Round Down, Round towards Zero, Round to the Nearest} \\
+    \textit{ret} $= {0}\ {01111110}\ {00000000000000000000000}$
     \end{itemize}
 
 \item $1 \ominus {(1.00000000000000000000001)}_{2} \times 2^{-25}$
@@ -198,7 +199,7 @@ O programa possui 9 funções:
     ${(1.00000000000000000000001)}_{2} \times 2^{-25} = {0}\ {01100110}\ {10000000000000000000001}$ \\
     \textit{ret} $= {0}\ {00000000}\ {00000000000000000000000000000000000000000000000}$ \\
 
-\item \textit{offset} $ {01111111} - {01100110} = 25$
+    \item \textit{offset} $ {01111111} - {01100110} = 25$
     
     \item \textit{define o sinal} \\
     $1\ > {(1.00000000000000000000001)}_{2} \times 2^{-25}$, logo \\
@@ -215,6 +216,12 @@ O programa possui 9 funções:
     
     \item \textit{cópia do expoente com alterações} \\
     \textit{ret} $= {0}\ {01111110}\ {11111111111111101001100011111111111111111111111}$ \\
+    
+    \item \textit{Round Up} \\
+    \textit{ret} $= {0}\ {01111110}\ {11111111111111110100111}$
+
+    \item \textit{Round Down, Round towards Zero, Round to the Nearest} \\
+    \textit{ret} $= {0}\ {01111110}\ {11111111111111110100110}$
     \end{itemize}
 \end{itemize}
 
