@@ -1,0 +1,163 @@
+\documentclass[a4paper, 12pt]{article}
+
+\usepackage[brazilian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{indentfirst}
+\usepackage{graphicx}
+\renewcommand{\rmdefault}{ptm}
+
+\title{Relatório do EP2}
+\author{Beatriz F. Marouelli, \\Leonardo Lana Violin Oliveira}
+\date{17 de Maio de 2017}
+
+\begin{document}
+\maketitle
+
+\section*{Caso Bilenear}
+Definindo 
+\begin{align*}
+    &h_x = x_{i+1} - x_i &&h_y = y_{i+1} - y_j\\
+    &w(x) =\left(\frac{x - x_i}{h_x}\right) &&z(y) = \left(\frac{y - y_j}{h_y}\right)\\
+\end{align*}
+
+Inicialemente temos o polinômio interpolador na malha 
+$[x_i, x_{i + 1}] \times [y_j, y_{j + 1}]$ na forma matricial:
+
+\[
+    s_{ij}^L(x,y) =
+\begin{bmatrix}
+    1 & w(x) 
+\end{bmatrix}
+\begin{bmatrix}
+    a_{00} & a_{01} \\
+    a_{10} & a_{11}
+\end{bmatrix}
+\begin{bmatrix}
+    1 \\
+    z(y)
+\end{bmatrix}
+\]
+
+E as 4 condições de interpolação:
+\begin{align}
+    s_{ij}^L(x_i,y_j) &= f(x_i, y_j) \tag{1}\\
+    s_{ij}^L(x_i,y_{j + 1}) &= f(x_i, y_{j + 1}) \tag{2} \\
+    s_{ij}^L(x_{i + 1},y_j) &= f(x_{i + 1}, y_j) \tag{3} \\
+    s_{ij}^L(x_{i + 1},y_{j + 1}) &= f(x_{i + 1}, y_{j + 1}) \tag{4}
+\end{align}
+
+Expandindo a forma matricial, obtemos:
+$$s_{ij}^L(x,y) = a_{00} + a_{10}w(x) + a_{01}z(y) + 1a_{11}w(x)z(y)$$
+
+Usando a condição $(1)$, temos:
+\begin{flalign*}
+    f(x_i, y_j) &= a_{00} + a_{10}w(x_i) + a_{01}z(y_j) + a_{11}w(x_i)z(y_j) \\ 
+    f(x_i, y_j) &= a_{00}
+\end{flalign*}
+
+Usando a condição $(2)$, temos:
+\begin{flalign*}
+    f(x_i, y_{j+1}) &= a_{00} + a_{10}w(x_i) + a_{01}z(y_{j+1}) + a_{11}w(x_i)z(y_{j+1}) \\
+    f(x_i, y_{j+1}) &= a_{00} + a_{01} \\
+    a_{01} &= f(x_i, y_{j + 1}) - f(x_i, y_j)
+\end{flalign*}
+
+Usando a condição $(3)$, temos:
+\begin{flalign*}
+    f(x_{i+1}, y_j) &= a_{00} + a_{10}w(x_{i+1}) + a_{01}z(y_j) + a_{11}w(x_{i+1})z(y_j) \\
+    f(x_{i+1}, y_j) &= a_{00} + a_{10} \\
+    \text{Substituindo $a_{00}$ e isolando $a_{10}$}\\
+    a_{10} &= f(x_{i + 1}, y_j) - f(x_i, y_j) 
+\end{flalign*}
+
+Usando a condição $(4)$, temos:
+\begin{flalign*}
+    f(x_{i+1}, y_{j+1}) &= a_{00} + a_{10}w(x_{i+1}) + a_{01}z(y_{j+1}) + a_{11}w(x_{i+1})z(y_{j + 1}) \\
+    f(x_{i+1}, y_{j+1}) &= a_{00} + a_{10} + a{01} + a{11}\\
+    \text{Substituindo $a_{00}$, $a_{10}$ e $a_{01}$}\\
+    f(x_{i+1}, y_{j+1}) &= f(x_i, y_j) + f(x_{i+1}, y_j) - f(x_i, y_j) + f(x_i, y_{j+1}) - f(x_i,y_j) + a_{11} \\
+    f(x_{i+1}, y_{j+1}) &= -f(x_i, y_j) + f(x_{i+1}, y_j) + f(x_i, y_{j+1}) + a_{11} \\
+    \text{Isolando $a_{11}$}\\
+    a_{11} &= f(x_{i+1}, y_{j+1}) + f(x_i, y_j) - f(x_{i+1}, y_j) - f(x_i, y_{j+1})
+\end{flalign*}
+
+\section*{Caso Bicúbico}
+Usando as mesmas definições para $w(x)$, $z(y)$, $h_x$ e $h_y$ que na seção
+anterior. Adicionando as derivadas de $w{(x)}$, $w{(x)}^2$, $w{(x)}^3$, $z{(y)}$,
+$z{(y)}^2$, $z{(y)}^3$:
+\begin{align*}
+    &\frac{dw}{dx} = \frac{1}{h_x} \ &\frac{dz}{dy} = \frac{1}{h_y}\\
+    &\frac{dw^2}{dx} = \frac{2{(x - x_i)}}{h_{x}^{2}} \ &\frac{dz^2}{dy} = \frac{2{(y-y_j)}}{h_y^2}\\
+    &\frac{dw^3}{dx} = \frac{3{(x - x_{i})}^{2}}{h_{x}^{3}} \ &\frac{dz^3}{dy} = \frac{3{(y-y_{j})}^{2}}{h_y^{3}}\\
+\end{align*}
+
+Neste caso, a função $s_{ij}^C(x,y)$ na malha $[x_i, x_{i+1}] \times [y_j,
+y_{j+1}]$ é dada na forma matricial por:
+
+\[
+    s_{ij}^C(x,y) =
+\begin{bmatrix}
+    1 & w{(x)} & w{(x)}^2 & w{(x)}^3
+\end{bmatrix}
+\begin{bmatrix}
+    a_{00} & a_{01} & a_{02} & a_{03}\\
+    a_{10} & a_{11} & a_{12} & a_{13}\\
+    a_{20} & a_{21} & a_{22} & a_{23}\\
+    a_{30} & a_{31} & a_{32} & a_{33}
+\end{bmatrix}
+\begin{bmatrix}
+    1 \\
+    z{(y)} \\
+    z{(y)}^2 \\
+    z{(y)}^3
+\end{bmatrix}
+\]
+
+Temos as 4 condições de interpolação:
+\begin{align}
+    s_{ij}^C(x_i,y_j) &= f(x_i, y_j) \tag{1}\\
+    s_{ij}^C(x_i,y_{j + 1}) &= f(x_i, y_{j + 1}) \tag{2}\\
+    s_{ij}^C(x_{i + 1},y_j) &= f(x_{i + 1}, y_j) \tag{3} \\
+    s_{ij}^C(x_{i + 1},y_{j + 1}) &= f(x_{i + 1}, y_{j + 1}) \tag{4}
+\end{align}
+
+Temos as 8 condições de interpolação nas derivadas parciais de primeira ordem:
+\begin{align}
+    \partial_{x}s_{ij}^C(x_{i}, y_{j})      &= \partial_{x}f(x_{i}, y_{j}) \tag{5}      \\
+    \partial_{x}s_{ij}^C(x_{i}, y_{j+1})    &= \partial_{x}f(x_{i}, y_{j+1}) \tag{6}    \\
+    \partial_{x}s_{ij}^C(x_{i+1}, y_{j})    &= \partial_{x}f(x_{i+1}, y_{j}) \tag{7}    \\
+    \partial_{x}s_{ij}^C(x_{i+1}, y_{j+1})  &= \partial_{x}f(x_{i+1}, y_{j+1}) \tag{8}  \\
+    \partial_{y}s_{ij}^C(x_{i}, y_{j})      &= \partial_{y}f(x_{i}, y_{j}) \tag{9}      \\
+    \partial_{y}s_{ij}^C(x_{i}, y_{j+1})    &= \partial_{y}f(x_{i}, y_{j+1}) \tag{10}   \\
+    \partial_{y}s_{ij}^C(x_{i+1}, y_{j})    &= \partial_{y}f(x_{i+1}, y_{j}) \tag{11}   \\
+    \partial_{y}s_{ij}^C(x_{i+1}, y_{j+1})  &= \partial_{y}f(x_{i+1}, y_{j+1}) \tag{12}
+\end{align}
+
+Além disso, temos as últimas 4 condições com as 4 derivadas parciais de segunda
+ordem:
+\begin{align}
+    \partial_{xy}^{2}s_{ij}^C(x_{i}, y_{j})      &= \partial_{xy}^{2}f(x_{i}, y_{j}) \tag{13}      \\
+    \partial_{xy}^{2}s_{ij}^C(x_{i}, y_{j+1})    &= \partial_{xy}^{2}f(x_{i}, y_{j+1}) \tag{14}    \\
+    \partial_{xy}^{2}s_{ij}^C(x_{i+1}, y_{j})    &= \partial_{xy}^{2}f(x_{i+1}, y_{j}) \tag{15}    \\
+    \partial_{xy}^{2}s_{ij}^C(x_{i+1}, y_{j+1})  &= \partial_{xy}^{2}f(x_{i+1}, y_{j+1}) \tag{16}
+\end{align}
+
+Expandindo a forma matricial, obtemos:
+\begin{align*}
+    s_{ij}^C(x,y) =\ &a_{00} + a_{10}w{(x)} + a_{20}w{(x)}^{2} + a_{30}w{(x)}^{3} +          \\ 
+               &{(a_{01} + a_{11}w{(x)} + a_{21}w{(x)}^{2} + a_{31}w{(x)}^{3})}z{(y)}\ +     \\ 
+               &{(a_{02} + a_{12}w{(x)} + a_{22}w{(x)}^{2} + a_{32}w{(x)}^{3})}z{(y)}^{2}\ + \\
+               &{(a_{03} + a_{13}w{(x)} + a_{23}w{(x)}^{2} + a_{33}w{(x)}^{3})}z{(y)}^{3}
+\end{align*}
+
+Derivando $s_{ij}^C(x,y)$ parcialmente em relação a $x$, temos:
+\begin{align*}
+    \partial_{x}s_{ij}^C(x, y) =\ &
+\end{align*}
+
+
+\end{document}
