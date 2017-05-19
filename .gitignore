@@ -1,0 +1,5 @@
+*.pdf
+*.djvu
+*.aux
+*.log
+octave-workspace
