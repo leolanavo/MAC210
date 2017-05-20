@@ -148,7 +148,7 @@ ordem:
 
 Expandindo a forma matricial, obtemos:
 \begin{align*}
-    s_{ij}^C(x,y) =\ &a_{00} + a_{10}w{(x)} + a_{20}w{(x)}^{2} + a_{30}w{(x)}^{3} +          \\ 
+    s_{ij}^C(x,y) =\ &a_{00} + a_{10}w{(x)} + a_{20}w{(x)}^{2} + a_{30}w{(x)}^{3}\ +          \\ 
                &{(a_{01} + a_{11}w{(x)} + a_{21}w{(x)}^{2} + a_{31}w{(x)}^{3})}z{(y)}\ +     \\ 
                &{(a_{02} + a_{12}w{(x)} + a_{22}w{(x)}^{2} + a_{32}w{(x)}^{3})}z{(y)}^{2}\ + \\
                &{(a_{03} + a_{13}w{(x)} + a_{23}w{(x)}^{2} + a_{33}w{(x)}^{3})}z{(y)}^{3}
@@ -156,8 +156,35 @@ Expandindo a forma matricial, obtemos:
 
 Derivando $s_{ij}^C(x,y)$ parcialmente em relação a $x$, temos:
 \begin{align*}
-    \partial_{x}s_{ij}^C(x, y) =\ &
+    \partial_{x}s_{ij}^C(x, y) =\ &a_{10}\frac{dw}{dx} + a_{20}\frac{dw^2}{dx} + a_{30}\frac{dw^3}{dx}\ +         \\
+                            &\left(a_{11}\frac{dw}{dx} + a_{21}\frac{dw^2}{dx} + a_{31}\frac{dw^3}{dx}\right)z\ + \\ 
+                            &\left(a_{12}\frac{dw}{dx} + a_{22}\frac{dw^2}{dx} + a_{32}\frac{dw^3}{dx}\right)z^2\ + \\ 
+                            &\left(a_{13}\frac{dw}{dx} + a_{23}\frac{dw^2}{dx} + a_{33}\frac{dw^3}{dx}\right)z^3 
 \end{align*}
 
+Derivando $s_{ij}^C(x,y)$ parcialmente em relação a $y$, temos:
+\begin{align*}
+    \partial_{y}s_{ij}^C(x, y) =\ &\left(a_{01} + a_{11}w + a_{21}w^2 + a_{31}w^3\right)\frac{dz}{dy}\ + \\ 
+                                  &\left(a_{02} + a_{12}w + a_{22}w^2 + a_{32}w^3\right)\frac{dz^2}{dy}\ + \\ 
+                                  &\left(a_{03} + a_{13}w + a_{23}w^2 + a_{33}w^3\right)\frac{dz^3}{dy} 
+\end{align*}
+
+Derivando $s_{ij}^C(x,y)$ parcialmente em relação a $x$ e depois em $y$, temos:
+\begin{align*}
+    \partial_{xy}s_{ij}^C(x, y) =\ &\left(a_{11}\frac{dw}{dx} + a_{21}\frac{dw^2}{dx} + a_{31}\frac{dw^3}{dx}\right)
+                            \frac{dz}{dy}\ + \\ 
+                            &\left(a_{12}\frac{dw}{dx} + a_{22}\frac{dw^2}{dx} + a_{32}\frac{dw^3}{dx}\right)
+                            \frac{dz^2}{dy}\ + \\ 
+                            &\left(a_{13}\frac{dw}{dx} + a_{23}\frac{dw^2}{dx} + a_{33}\frac{dw^3}{dx}\right)
+                            \frac{dz^3}{dy} 
+\end{align*}
+
+Usando as 16 condições de interpolação cúbica, obtemos:
+\begin{align}
+    a_{00} &= f(x_{i}, y_{j}) \tag{1}\\
+    a_{10} &= h_{x} \frac{\partial f}{\partial x}(x_{i}, y_{j}) \tag{5} \\
+    a_{01} &= h_{y} \frac{\partial f}{\partial y}(x_i, y_j) \tag{9} \\
+    a_{11} &= h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) \tag{13} \\
+\end{align}
 
 \end{document}
