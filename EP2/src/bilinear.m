@@ -27,7 +27,7 @@ function bilinear ()
   nx = input("Escolha nx: ");
   ny = input("Escolha ny: ");
 
-  teste = points (nx, ny, ax, bx, ay, by)
+  teste = points (nx, ny, ax, bx, ay, by);
   teste_pontos = example_1 (nx, ny, teste);
   constroiv (nx, ny, ax, bx, ay, by, teste, teste_pontos);
   
@@ -63,12 +63,19 @@ end
   
 function constroiv (nx, ny, ax, bx, ay, by, points, fx)
   squares = zeros(2, 2, nx*ny);
-  
+  i = 1;
+  init = 0;
   for j = 1 : nx*ny    
-    squares(1, 1, j) = points(1, 1, i);
-    squares(1, 2, j) = points(1, 2, i);
-    squares(2, 1, j) = points(2, 1, i + 1);
-    squares(2, 2, j) = points(2, 2, i + 1);
+    squares(1, 1, j) = points(1 + init, 1, i);
+    squares(1, 2, j) = points(1 + init, 2, i);
+    squares(2, 1, j) = points(2 + init, 1, i + 1);
+    squares(2, 2, j) = points(2 + init, 2, i + 1);
+    if (i < nx)
+        i++;
+    else
+        i = 1;
+        init++;
+    endif
   endfor
   squares
 end
