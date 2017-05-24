@@ -51,12 +51,12 @@ E as 4 condições de interpolação:
 \end{align}
 
 Expandindo a forma matricial, obtemos:
-$$s_{ij}^L(x,y) = a_{00} + a_{10}w(x) + a_{01}z(y) + 1a_{11}w(x)z(y)$$
+$$s_{ij}^L(x,y) = a_{00} + a_{10}w(x) + a_{01}z(y) + a_{11}w(x)z(y)$$
 
 Usando a condição $(1)$, temos:
 \begin{flalign*}
     f(x_i, y_j) &= a_{00} + a_{10}w(x_i) + a_{01}z(y_j) + a_{11}w(x_i)z(y_j) \\ 
-    f(x_i, y_j) &= a_{00}
+      a_{00} &= f(x_i, y_j)
 \end{flalign*}
 
 Usando a condição $(2)$, temos:
@@ -84,6 +84,16 @@ Usando a condição $(4)$, temos:
     \text{Isolando $a_{11}$}\\
     a_{11} &= f(x_{i+1}, y_{j+1}) + f(x_i, y_j) - f(x_{i+1}, y_j) - f(x_i, y_{j+1})
 \end{flalign*}
+
+Então ao final da construção, temos o sistema:
+\begin{equation*}
+    \begin{cases}
+        a_{00} = f(x_{i}, y_{j}) \\
+        a_{01} = f(x_{i}, y_{j+1}) - f(x_{i}, y_{j}) \\
+        a_{10} = f(x_{i+1}, y_{j}) - f(x_{i}, y_{j}) \\
+        a_{11} = f(x_{i+1}, y_{j+1}) + f(x_{i}, y_{j}) - f(x_{i+1}, y_{j}) - f(x_{i}, y_{j+1}) \\
+    \end{cases}
+\end{equation*}
 
 \section*{Caso Bicúbico}
 Usando as mesmas definições para $w(x)$, $z(y)$, $h_x$ e $h_y$ que na seção
@@ -119,10 +129,10 @@ y_{j+1}]$ é dada na forma matricial por:
 
 Temos as 4 condições de interpolação:
 \begin{align}
-    s_{ij}^C(x_i,y_j) &= f(x_i, y_j) \tag{1}\\
-    s_{ij}^C(x_i,y_{j + 1}) &= f(x_i, y_{j + 1}) \tag{2}\\
-    s_{ij}^C(x_{i + 1},y_j) &= f(x_{i + 1}, y_j) \tag{3} \\
-    s_{ij}^C(x_{i + 1},y_{j + 1}) &= f(x_{i + 1}, y_{j + 1}) \tag{4}
+    s_{ij}^C(x_i,y_j)&=f(x_i, y_j)\tag{1} \\
+    s_{ij}^C(x_i,y_{j + 1})&=f(x_i, y_{j + 1})\tag{2}\\
+    s_{ij}^C(x_{i + 1},y_j)&=f(x_{i + 1}, y_j)\tag{3}\\
+    s_{ij}^C(x_{i + 1},y_{j + 1})&=f(x_{i + 1}, y_{j + 1})\tag{4}
 \end{align}
 
 Temos as 8 condições de interpolação nas derivadas parciais de primeira ordem:
@@ -179,12 +189,92 @@ Derivando $s_{ij}^C(x,y)$ parcialmente em relação a $x$ e depois em $y$, temos
                             \frac{dz^3}{dy} 
 \end{align*}
 
-Usando as 16 condições de interpolação cúbica, obtemos:
+Usando as condições $1$,  $5$, $9$ e $13$ de interpolação cúbica, obtemos:
 \begin{align}
-    a_{00} &= f(x_{i}, y_{j}) \tag{1}\\
-    a_{10} &= h_{x} \frac{\partial f}{\partial x}(x_{i}, y_{j}) \tag{5} \\
-    a_{01} &= h_{y} \frac{\partial f}{\partial y}(x_i, y_j) \tag{9} \\
-    a_{11} &= h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) \tag{13} \\
+    a_{00} &= f(x_{i}, y_{j}) \tag{17}\\
+    a_{10} &= h_{x} \frac{\partial f}{\partial x}(x_{i}, y_{j}) \tag{18} \\
+    a_{01} &= h_{y} \frac{\partial f}{\partial y}(x_i, y_j) \tag{19} \\
+    a_{11} &= h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) \tag{20}
+\end{align}
+
+Usando as condições $2$, e $10$ e as equações $17$ e $19$, obtemos o sistema:
+\begin{align*}
+    \begin{cases}
+        a_{00} = f(x_{i}, y_{j}) \\
+        a_{01} = h_y \frac{\partial f}{\partial y}(x_i, y_j) \\
+        a_{00} + a_{01} + a_{02} + a_{03} = f(x_i, y_{j+1}) \\
+        a_{01} + 2a_{02} + 3a_{03} = h_y \frac{\partial f}{\partial y}(x_i, y_{j+1}) 
+    \end{cases}
+\end{align*}
+
+Resolvendo este sistema, temos que:
+\begin{align}
+    &a_{02} = 3(f(x_, y_{j+1}) - f(x_i, y_j)) - 
+        h_y \left(2\frac{\partial f}{\partial x}(x_i, y_j) + \frac{\partial f}{\partial x}(x_i,y_{j+1})\right)
+    \tag{21} \\
+    &a_{03} = 2(f(x_i, y_j) - f(x_i, y_{j+1})) + 
+    h_y \left(\frac{\partial f}{\partial x}(x_i, y_j) + \frac{\partial f}{\partial x}(x_i,y_{j+1})\right)
+    \tag{22}
+\end{align}
+
+Usando as condições $3$ e $7$ e as equações $17$ e $18$, obtemos o sistema:
+\begin{align*}
+    \begin{cases}
+        a_{00} = f(x_{i}, y_{j}) \\
+        a_{10} = h_x \frac{\partial f}{\partial y}(x_i, y_j) \\
+        a_{00} + a_{10} + a_{20} + a_{30} = f(x_{i+1}, y_j) \\
+        a_{10} + 2a_{20} + 3a_{30} = h_x \frac{\partial f}{\partial x}(x_{i+1}, y_j) 
+    \end{cases}
+\end{align*}
+
+Resolvendo este sistema, temos que:
+\begin{align}
+    &a_{20} = 3(f(x_{i+1}, y_j) - f(x_i, y_j)) - 
+    h_x \left(2\frac{\partial f}{\partial x}(x_i, y_j) + \frac{\partial f}{\partial x}(x_{i+1},y_j)\right)
+    \tag{23} \\
+    &a_{30} = 2(f(x_i, y_j) - f(x_{i+1}, y_j)) + 
+    h_x \left(\frac{\partial f}{\partial x}(x_i, y_j) + \frac{\partial f}{\partial x}(x_{i+1},y_j)\right)
+    \tag{24}
+\end{align}
+
+Usando as condições $6$ e $14$ e as equações $18$ e $20$, obtemos o sistema:
+\begin{align*}
+    \begin{cases}
+        a_{10} = h_{x} \frac{\partial f}{\partial x}(x_{i}, y_{j}) \\
+        a_{11} = h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) \\
+        a_{10} + a_{11} + a_{12} + a_{13} = h_x \frac{\partial f}{\partial x}(x_i, y_{j+1}) \\
+        a_{11} + 2a_{12} + 3a_{13} = h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_i, y_{j+1}) 
+    \end{cases}
+\end{align*}
+
+Resolvendo este sistema, temos que:
+\begin{align}
+    &a_{12} = 3h_x\left(\frac{\partial f}{\partial x}(x_i, y_{j+1}) - \frac{\partial f}{\partial x}(x_{i}, y_{j})\right) - 
+    h_x h_y \left(2\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_i, y_{j+1}) \right)
+    \tag{25} \\
+    &a_{13} = 2h_x\left(\frac{\partial f}{\partial x}(x_{i}, y_{j}) - \frac{\partial f}{\partial x}(x_i, y_{j+1})\right) + 
+    h_x h_y\left(\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_i, y_{j+1})\right)
+    \tag{26}
+\end{align}
+
+Usando as condições $11$ e $15$ e as equações $19$ e $20$, obtemos o sistema:
+\begin{align*}
+    \begin{cases}
+        a_{01} = h_{y} \frac{\partial f}{\partial y}(x_i, y_j) \\
+        a_{11} = h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_i, y_j)\\
+        a_{01} + a_{11} + a_{21} + a_{31} = h_y \frac{\partial f}{\partial y}(x_{i+1}, y_j)\\
+        a_{11} + 2a_{21} + 3a_{31} =  h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_j)
+    \end{cases}
+\end{align*}
+
+Resolvendo este sistema, temos que:
+\begin{align}
+    &a_{21} = 3h_x\left((\frac{\partial f}{\partial x}(x_{i+1}, y_j) - \frac{\partial f}{\partial x}(x_{i}, y_{j})\right) - 
+    h_x h_y \left(2\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_j) \right)
+    \tag{27} \\
+    &a_{31} = 2h_x\left(\frac{\partial f}{\partial x}(x_{i}, y_{j}) - \frac{\partial f}{\partial x}(x_{i+1}, y_j)\right) + 
+    h_x h_y\left(\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_j)\right)
+    \tag{28}
 \end{align}
 
 \end{document}
