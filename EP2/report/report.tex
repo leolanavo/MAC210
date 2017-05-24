@@ -17,7 +17,7 @@
 \begin{document}
 \maketitle
 
-\section*{Caso Bilenear}
+\section*{Caso Bilinear}
 Definindo 
 \begin{align*}
     &h_x = x_{i+1} - x_i &&h_y = y_{i+1} - y_j\\
@@ -77,7 +77,7 @@ Usando a condição $(3)$, temos:
 Usando a condição $(4)$, temos:
 \begin{flalign*}
     f(x_{i+1}, y_{j+1}) &= a_{00} + a_{10}w(x_{i+1}) + a_{01}z(y_{j+1}) + a_{11}w(x_{i+1})z(y_{j + 1}) \\
-    f(x_{i+1}, y_{j+1}) &= a_{00} + a_{10} + a{01} + a{11}\\
+    f(x_{i+1}, y_{j+1}) &= a_{00} + a_{10} + a_{01} + a_{11}\\
     \text{Substituindo $a_{00}$, $a_{10}$ e $a_{01}$}\\
     f(x_{i+1}, y_{j+1}) &= f(x_i, y_j) + f(x_{i+1}, y_j) - f(x_i, y_j) + f(x_i, y_{j+1}) - f(x_i,y_j) + a_{11} \\
     f(x_{i+1}, y_{j+1}) &= -f(x_i, y_j) + f(x_{i+1}, y_j) + f(x_i, y_{j+1}) + a_{11} \\
