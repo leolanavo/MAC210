@@ -88,33 +88,13 @@ function coef = constroiv (nx, ny, ax, bx, ay, by, points, fx)
 
 end
 
-function squares(nx, ny, points)
-    squares = zeros(2, 2, nx*ny);
-    i = 1;
-    init = 0;
-    
-    for j = 1 : nx*ny    
-        squares(1, 1, j) = points(1 + init, 1, i);
-        squares(1, 2, j) = points(1 + init, 2, i);
-        squares(2, 1, j) = points(2 + init, 1, i + 1);
-        squares(2, 2, j) = points(2 + init, 2, i + 1);
-        if (i < nx)
-            i++;
-        else
-            i = 1;
-            init++;
-        endif
-    endfor
-
-end
-
 function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
 
     i = 1;
     j = 2;
     init = 0;
-    disp("TANGO");
     found = false;
+    
     while(j <= nx+1 && !found)
         if (x <= points(1, 1, j))
             sqxmax = points(1, 1, j);
@@ -127,13 +107,10 @@ function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
             endwhile  
         endif
     endwhile
-    disp("EL DIABLO");
+    
     indx = (sqxmax - points(1, 1, 1))/hx;
     indy = (sqymax - points(1, 2, 1))/hy;
-
     ind = indx + (indy - 1)*nx;
-    disp(sqxmax);
-    disp(sqymax);
 
-    ret = [1, (x - (sqxmax - hx))/hx]*coef(:,:,ind)*[1; (y - (sqymax - hy))/hy]
+    ret = [1, (x - (sqxmax - hx))/hx]*coef(:,:,ind)*[1; (y - (sqymax - hy))/hy];
 end
