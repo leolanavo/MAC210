@@ -209,11 +209,11 @@ Usando as condições $2$, e $10$ e as equações $17$ e $19$, obtemos o sistema
 
 Resolvendo este sistema, temos que:
 \begin{align}
-    &a_{02} = 3(f(x_, y_{j+1}) - f(x_i, y_j)) - 
-        h_y \left(2\frac{\partial f}{\partial x}(x_i, y_j) + \frac{\partial f}{\partial x}(x_i,y_{j+1})\right)
+    &a_{02} = 3(f(x_i, y_{j+1}) - f(x_i, y_j)) - 
+        h_y \left(2\frac{\partial f}{\partial y}(x_i, y_j) + \frac{\partial f}{\partial y}(x_i,y_{j+1})\right)
     \tag{21} \\
     &a_{03} = 2(f(x_i, y_j) - f(x_i, y_{j+1})) + 
-    h_y \left(\frac{\partial f}{\partial x}(x_i, y_j) + \frac{\partial f}{\partial x}(x_i,y_{j+1})\right)
+    h_y \left(\frac{\partial f}{\partial y}(x_i, y_j) + \frac{\partial f}{\partial y}(x_i,y_{j+1})\right)
     \tag{22}
 \end{align}
 
@@ -269,10 +269,10 @@ Usando as condições $11$ e $15$ e as equações $19$ e $20$, obtemos o sistema
 
 Resolvendo este sistema, temos que:
 \begin{align}
-    &a_{21} = 3h_x\left((\frac{\partial f}{\partial x}(x_{i+1}, y_j) - \frac{\partial f}{\partial x}(x_{i}, y_{j})\right) - 
+    &a_{21} = 3h_y\left(\frac{\partial f}{\partial y}(x_{i+1}, y_j) - \frac{\partial f}{\partial y}(x_{i}, y_{j})\right) - 
     h_x h_y \left(2\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_j) \right)
     \tag{27} \\
-    &a_{31} = 2h_x\left(\frac{\partial f}{\partial x}(x_{i}, y_{j}) - \frac{\partial f}{\partial x}(x_{i+1}, y_j)\right) + 
+    &a_{31} = 2h_y\left(\frac{\partial f}{\partial y}(x_{i}, y_{j}) - \frac{\partial f}{\partial y}(x_{i+1}, y_j)\right) + 
     h_x h_y\left(\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_j)\right)
     \tag{28}
 \end{align}
