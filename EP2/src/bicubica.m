@@ -36,7 +36,7 @@ function bicubica ()
     teste = points (nx, ny, ax, bx, ay, by);
     teste_pontos = example_1 (nx, ny, teste);
     coeficientes = constroiv (nx, ny, ax, bx, ay, by, teste, teste_pontos)
-    %avalia = avaliav(x, y, nx, ny, teste, hx, hy, coeficientes)
+    avalia = avaliav(x, y, nx, ny, teste, hx, hy, coeficientes)
 
 end
 
@@ -98,17 +98,30 @@ function coef = constroiv (nx, ny, ax, bx, ay, by, points, fx_dxdy)
         coef(2, 3, j) = 3*hx*(fx_dxdy(1, 2, k + 1) - fx_dxdy(1, 2, k)) - hx*hy*(2*fx_dxdy(2, 2, k) + fx_dxdy(2, 2, k + 1));
         coef(2, 4, j) = 2*hx*(fx_dxdy(1, 2, k) - fx_dxdy(1, 2, k + 1)) + hx*hy*(fx_dxdy(2, 2, k) + fx_dxdy(2, 2, k + 1));
         
-        disp(k);
-        disp(dist);
         coef(3, 1, j) = 3*(fx_dxdy(1, 1, k + dist) - fx_dxdy(1, 1, k)) - hx*(2*fx_dxdy(1, 2, k) + fx_dxdy(1, 2, k + dist));
         coef(3, 2, j) = 3*hy*(fx_dxdy(2, 1, k + dist) - fx_dxdy(2, 1, k)) - hx*hy*(2*fx_dxdy(2, 2, k) + fx_dxdy(2, 2, k + dist));
-        coef(4, 1, j) = 2*(fx_dxdy(1, 1, k) - fx_dxdy(1, 1, k + dist)) + hx*(fx_dxdy(1, 2, k) + fx_dxdy(1, 2, k + 3));
+        coef(4, 1, j) = 2*(fx_dxdy(1, 1, k) - fx_dxdy(1, 1, k + dist)) + hx*(fx_dxdy(1, 2, k) + fx_dxdy(1, 2, k + dist));
         coef(4, 2, j) = 2*hy*(fx_dxdy(2, 1, k) - fx_dxdy(2, 1, k + dist)) + hx*hy*(fx_dxdy(2, 2, k) + fx_dxdy(2, 2, k + dist));
 
-        coef(3, 3, j) = 0;
-        coef(3, 4, j) = 0;
-        coef(4, 3, j) = 0;
-        coef(4, 4, j) = 0;
+        a = 3*hy*fx_dxdy(2, 1, k + dist + 1) - hx*hy*fx_dxdy(2, 2, k + dist + 1) - 2*(fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k));
+        b = 2*(fx_dxdy(1, 1, k + 1) + fx_dxdy(1, 1, k + dist)) - 3*(coef(1, 2, j) + 2* coef(1, 3, j) + 3*coef(1, 4, j));
+        c = coef(3,2,j) - 2*coef(2,3,j) - 4*coef(2,4,j);
+        coef(3, 4, j) = a + b + c;
+
+        a = fx_dxdy(1,1,k+dist+1) + fx_dxdy(1,1,k) - fx_dxdy(1,1,k+1);
+        b = -fx_dxdy(1,1,k+dist) - coef(2,2,j) - coef(2,3,j);
+        c = -coef(2,4,j) - coef(3,2,j) - coef(3,4,j);
+        coef(3,3,j) = a + b + c;
+
+        a = hx*fx_dxdy(1, 2, k + dist + 1) - 2*(fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k));
+        b = 2*(fx_dxdy(1, 1, k + 1) + fx_dxdy(1, 1, k + dist) + hy*fx_dxdy(2, 1, k + dist + 1)) - hx*hy*fx_dxdy(2, 2, k + dist + 1);
+        c = coef(1, 2, j) - coef(2, 2, j) + coef(4, 2, j) - 4*coef(1,3,j) - 2*coef(2,3,j) + 6*coef(1,4,j) - 3*coef(2,4,j);          
+        coef(4,3,j) = a + b + c;
+
+        a = hx*fx_dxdy(1,2,k+dist+1) - 2*(fx_dxdy(1,1,k+dist+1) + fx_dxdy(1,1,k));
+        b = 2*(fx_dxdy(1,1,k+1) + fx_dxdy(1,1,k+dist));
+        c = -3*coef(4,3,j);
+        coef(4,4,j) = (a + b + c)/3;
 
         if (max_line < nx)
             k = k + dist;
@@ -116,6 +129,7 @@ function coef = constroiv (nx, ny, ax, bx, ay, by, points, fx_dxdy)
         else
             k = init + 1;
             init++;
+            max_line = 1;
         endif
     endfor
 
@@ -137,13 +151,18 @@ function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
                     sqymax = points(i, 2, j);
                     found = true;
                 endif
+                i++;
             endwhile  
         endif
+        j++;
     endwhile
     
     indx = (sqxmax - points(1, 1, 1))/hx;
     indy = (sqymax - points(1, 2, 1))/hy;
     ind = indx + (indy - 1)*nx;
 
-    ret = [1, (x - (sqxmax - hx))/hx]*coef(:,:,ind)*[1; (y - (sqymax - hy))/hy];
+    w = (x - (sqxmax - hx))/hx;
+    z = (y - (sqymax - hy))/hy;
+
+    ret = [1, w, w^2, w^3]*coef(:,:,ind)*[1; z; z^2; z^3];
 end
