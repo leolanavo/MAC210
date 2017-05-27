@@ -8,10 +8,10 @@
 
 function bilinear ()
 
-    disp("Funções disponíveis:")
-    disp(" 1: ")
-    disp(" 2: ")
-    disp(" 3: ")
+    disp("Funções disponíveis:");
+    disp(" 1: f(x,y) = x + y");
+    disp(" 2: f(x,y) = sen(x - y)");
+    disp(" 3: f(x,y) = (x² - y²)²");
     fun = input("Escolha a função pelo seu número correspondente: ");
     
     disp("Passe os parâmetros que definirão a malha [ax, bx] x [ay, by],")
@@ -28,31 +28,163 @@ function bilinear ()
     hx = (bx - ax)/nx;
     hy = (by - ay)/ny;
 
+    points = interpolate_points (nx, ny, ax, bx, ay, by);
 
-    disp("Escolha um ponto da malha para avaliar v");
-    x = input("x: ");
-    y = input("y: ");
-  
-    teste = points (nx, ny, ax, bx, ay, by);
-    teste_pontos = example_1 (nx, ny, teste);
-    coeficientes = constroiv (nx, ny, ax, bx, ay, by, teste, teste_pontos);
-    avalia = avaliav(x, y, nx, ny, teste, hx, hy, coeficientes)
+    if (fun == 1)
+        function_data = find_values (nx, ny, points, "f1");
+        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f1", 1);
+        plot(ax_x, ax_y, ax_z);
+        title ("Original: f(x,y) = x + y");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+	plot(ax_x, ax_y, ax_z_v);
+        title ("Interpolated");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+        title ("Error");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+
+        disp("Escolha um ponto da malha para avaliar:");
+        x = input("x: ");
+        y = input("y: ");
+        disp("Valor da Função Interpoladora:");
+        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
+        disp("Valor da Função Original:");
+        disp(f1(x, y));
+
+
+    elseif (fun == 2)
+        function_data = find_values (nx, ny, points, "f2");
+        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f2", 1);
+         plot(ax_x, ax_y, ax_z);
+        title ("Original: f(x,y) = sen(x - y)");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+	plot(ax_x, ax_y, ax_z_v);
+        title ("Interpolated");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+        title ("Error");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+
+        disp("Escolha um ponto da malha para avaliar:");
+        x = input("x: ");
+        y = input("y: ");
+        disp("Valor da Função Interpoladora:");
+        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
+        disp("Valor da Função Original:");
+        disp(f2(x, y));
+
+    elseif (fun == 3)
+        function_data = find_values (nx, ny, points, "f3");
+        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f3", 1);
+         plot(ax_x, ax_y, ax_z);
+        title ("Original: f(x,y) = (x² - y²)²");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+	plot(ax_x, ax_y, ax_z_v);
+        title ("Interpolated");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+        title ("Error");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+
+        disp("Escolha um ponto da malha para avaliar:");
+        x = input("x: ");
+        y = input("y: ");
+        disp("Valor da Função Interpoladora:");
+        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
+        disp("Valor da Função Original:");
+        disp(f3(x, y));
+    endif
 
 end
 
-function fx = example_1 (nx, ny, points)
+function z = f1(x, y)
+    z = x + y;
+end
 
-    fx = zeros(ny + 1, 1, nx + 1);
+function z = f2(x, y)
+    z = sin(x - y);
     
-    for i = 1 : nx + 1
-        for j = 1 : ny + 1
-            fx(j, 1, i) = points(j, 1, i) + points(j, 2, i);    
+end
+
+function z = f3(x, y)
+    z = (x^2-y^2)^2;
+    
+end
+
+function plot (x_axis, y_axis, z_axis)
+    mesh(x_axis, y_axis, z_axis);
+end
+
+  function [x_axis, y_axis, z_axis, z_axis_v] = grid (delta, nx, ny, ax, bx, ay, by, points, coef, f, graphic)
+
+    grid_nx = (bx - ax)/delta;
+    grid_ny = (by - ay)/delta;
+
+    hx = (bx - ax)/nx;
+    hy = (by - ay)/ny;
+
+    x_axis = zeros(1, grid_nx + 1);
+    y_axis = zeros(1, grid_ny + 1);
+    z_axis = zeros(grid_nx + 1, grid_ny + 1);
+    z_axis_v = zeros(grid_nx + 1, grid_ny + 1);
+
+    for i = 1  : grid_nx + 1
+	x_axis(i) = ax + (i - 1) * delta;
+    endfor
+
+    for j = 1 : grid_ny + 1
+	y_axis(j) = ay + (j - 1) * delta;
+    endfor
+       
+    for i = 1 : grid_nx + 1 
+	for j = 1 : grid_ny + 1
+	    z_axis(i, j) = str2func(f)(x_axis(i), y_axis(j));
+            z_axis_v(i, j) = avaliav(x_axis(i), y_axis(j), nx, ny, points, hx, hy, coef);
         endfor
     endfor
 
 end
 
-function matrix = points (nx, ny, ax, bx, ay, by)
+function fx = find_values (nx, ny, points, f)
+
+    fx = zeros(ny + 1, 1, nx + 1);
+    
+    for i = 1 : nx + 1
+        for j = 1 : ny + 1
+	    fx(j, 1, i) = str2func(f)(points(j, 1, i),points(j, 2, i));    
+        endfor
+    endfor
+
+end
+
+function matrix = interpolate_points (nx, ny, ax, bx, ay, by)
 
     matrix = zeros(ny + 1, 2, nx + 1);
   
@@ -104,13 +236,17 @@ function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
                     sqymax = points(i, 2, j);
                     found = true;
                 endif
+		i++;
             endwhile  
         endif
+	j++;
     endwhile
     
     indx = (sqxmax - points(1, 1, 1))/hx;
     indy = (sqymax - points(1, 2, 1))/hy;
     ind = indx + (indy - 1)*nx;
+
+    ind = int32(ind);
 
     ret = [1, (x - (sqxmax - hx))/hx]*coef(:,:,ind)*[1; (y - (sqymax - hy))/hy];
 end

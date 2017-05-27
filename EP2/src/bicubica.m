@@ -8,10 +8,10 @@
 
 function bicubica ()
 
-    disp("Funções disponíveis:")
-    disp(" 1: ")
-    disp(" 2: ")
-    disp(" 3: ")
+    disp("Funções disponíveis:");
+    disp(" 1: f(x,y) = x + y");
+    disp(" 2: f(x,y) = sen(x - y)");
+    disp(" 3: f(x,y) = (x² - y²)²");
     fun = input("Escolha a função pelo seu número correspondente: ");
     
     disp("Passe os parâmetros que definirão a malha [ax, bx] x [ay, by],")
@@ -28,19 +28,126 @@ function bicubica ()
     hx = (bx - ax)/nx;
     hy = (by - ay)/ny;
 
+    points = interpolate_points (nx, ny, ax, bx, ay, by);
 
-    disp("Escolha um ponto da malha para avaliar v");
-    x = input("x: ");
-    y = input("y: ");
-  
-    teste = points (nx, ny, ax, bx, ay, by);
-    teste_pontos = example_1 (nx, ny, teste);
-    coeficientes = constroiv (nx, ny, ax, bx, ay, by, teste, teste_pontos)
-    avalia = avaliav(x, y, nx, ny, teste, hx, hy, coeficientes)
+    if (fun == 1)
+        function_data = find_values (nx, ny, points, "f1");
+        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f1", 1);
+        plot(ax_x, ax_y, ax_z);
+        title ("Original: f(x,y) = x + y");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+	plot(ax_x, ax_y, ax_z_v);
+        title ("Interpolated");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+        title ("Error");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
 
+        disp("Escolha um ponto da malha para avaliar:");
+        x = input("x: ");
+        y = input("y: ");
+        disp("Valor da Função Interpoladora:");
+        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
+        disp("Valor da Função Original:");
+        [z, zx, zy, zxy] = f1(x, y);
+        disp(z);
+
+
+    elseif (fun == 2)
+        function_data = find_values (nx, ny, points, "f2");
+        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f2", 1);
+         plot(ax_x, ax_y, ax_z);
+        title ("Original: f(x,y) = sen(x - y)");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+	plot(ax_x, ax_y, ax_z_v);
+        title ("Interpolated");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+        title ("Error");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+
+        disp("Escolha um ponto da malha para avaliar:");
+        x = input("x: ");
+        y = input("y: ");
+        disp("Valor da Função Interpoladora:");
+        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
+        disp("Valor da Função Original:");
+        [z, zx, zy, zxy] = f2(x, y);
+        disp(z);
+
+    elseif (fun == 3)
+        function_data = find_values (nx, ny, points, "f3");
+        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f3", 1);
+         plot(ax_x, ax_y, ax_z);
+        title ("Original: f(x,y) = (x² - y²)²");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+	plot(ax_x, ax_y, ax_z_v);
+        title ("Interpolated");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+        figure
+        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+        title ("Error");
+        xlabel ("x");
+        ylabel ("y");
+        zlabel ("z");
+
+        disp("Escolha um ponto da malha para avaliar:");
+        x = input("x: ");
+        y = input("y: ");
+        disp("Valor da Função Interpoladora:");
+        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
+        disp("Valor da Função Original:");
+        [z, zx, zy, zxy] = f3(x, y);
+        disp(z);
+    endif
 end
 
-function fx_dxdy = example_1 (nx, ny, points)
+function [z, zx, zy, zxy] = f1(x, y)
+    z = x + y;
+    zx = zy = 1;
+    zxy = 0;
+end
+
+function [z, zx, zy, zxy] = f2(x, y)
+    z = sin(x - y);
+    zx = cos(x - y);
+    zy = - cos(x - y);
+    zxy = sin(x - y);
+end
+
+function [z, zx, zy, zxy] = f3(x, y)
+    z = (x^2-y^2)^2;
+    zx = 4*x*(x^2 - y^2);
+    zy = -4*y*(x^2 - y^2);
+    zxy = -8*x*y;
+end
+
+
+function fx_dxdy = find_values (nx, ny, points, f)
 
     max_points = (nx + 1)*(ny + 1);
     fx_dxdy = zeros(2, 2, max_points);
@@ -48,11 +155,13 @@ function fx_dxdy = example_1 (nx, ny, points)
     
     for i = 1 : nx + 1
         for j = 1 : ny + 1
+
+	    [z, zx, zy, zxy] =  str2func(f)(points(j, 1, i), points(j, 2, i));
             
-            fx_dxdy(1, 1, k) = points(j, 1, i) + points(j, 2, i);
-            fx_dxdy(1, 2, k) = 1;
-            fx_dxdy(2, 1, k) = 1;
-            fx_dxdy(2, 2, k) = 0;
+	    fx_dxdy(1, 1, k) = z;
+            fx_dxdy(1, 2, k) = zx;
+            fx_dxdy(2, 1, k) = zy;
+            fx_dxdy(2, 2, k) = zxy;
             
             k++;
         endfor
@@ -60,16 +169,49 @@ function fx_dxdy = example_1 (nx, ny, points)
  
 end
 
-function matrix = points (nx, ny, ax, bx, ay, by)
+function plot (x_axis, y_axis, z_axis)
+    mesh(x_axis, y_axis, z_axis);
+end
+
+function [x_axis, y_axis, z_axis, z_axis_v] = grid (delta, nx, ny, ax, bx, ay, by, points, coef, f)
+
+    grid_nx = (bx - ax)/delta;
+    grid_ny = (by - ay)/delta;
+
+    hx = (bx - ax)/nx;
+    hy = (by - ay)/ny;
+
+    x_axis = zeros(1, grid_nx + 1);
+    y_axis = zeros(1, grid_ny + 1);
+    z_axis = zeros(grid_nx + 1, grid_ny + 1);
+    z_axis_v = zeros(grid_nx + 1, grid_ny + 1);
+
+    for i = 1  : grid_nx + 1
+	x_axis(i) = ax + (i - 1) * delta;
+    endfor
+
+    for j = 1 : grid_ny + 1
+	y_axis(j) = ay + (j - 1) * delta;
+    endfor
+       
+    for i = 1 : grid_nx + 1 
+	for j = 1 : grid_ny + 1
+	    z_axis(i, j) = str2func(f)(x_axis(i), y_axis(j));
+            z_axis_v(i, j) = avaliav(x_axis(i), y_axis(j), nx, ny, points, hx, hy, coef);
+        endfor
+    endfor
+end
+	  
+function matrix = interpolate_points (nx, ny, ax, bx, ay, by)
 
     matrix = zeros(ny + 1, 2, nx + 1);
-  
+      
     hx = (bx - ax)/nx;
     hy = (by - ay)/ny;
   
     for i = 1 : nx + 1
         for j = 1 : ny + 1	    
-            matrix(j, 1, i) = ax + (i - 1) * hx;
+       	    matrix(j, 1, i) = ax + (i - 1) * hx;
             matrix(j, 2, i) = ay + (j - 1) * hy;    
         endfor
     endfor
@@ -113,15 +255,15 @@ function coef = constroiv (nx, ny, ax, bx, ay, by, points, fx_dxdy)
         c = -coef(2,4,j) - coef(3,2,j) - coef(3,4,j);
         coef(3,3,j) = a + b + c;
 
-        a = hx*fx_dxdy(1, 2, k + dist + 1) - 2*(fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k));
-        b = 2*(fx_dxdy(1, 1, k + 1) + fx_dxdy(1, 1, k + dist) + hy*fx_dxdy(2, 1, k + dist + 1)) - hx*hy*fx_dxdy(2, 2, k + dist + 1);
-        c = coef(1, 2, j) - coef(2, 2, j) + coef(4, 2, j) - 4*coef(1,3,j) - 2*coef(2,3,j) + 6*coef(1,4,j) - 3*coef(2,4,j);          
+        a = 2*(hy*fx_dxdy(2, 1, k + dist +1) - fx_dxdy(1, 1, k + dist + 1) - fx_dxdy(1, 1, k) + fx_dxdy(1, 1, k + 1) + fx_dxdy(1, 1, k + dist));
+        b = hx*fx_dxdy(1, 2, k + dist + 1) - hx*hy*fx_dxdy(2, 2, k + dist + 1);
+        c = -2*coef(1, 2, j) - coef(2, 1, j) + coef(4, 2, j) - 4*coef(1, 3, j) - coef(2, 3, j) - 6*coef(1, 4, j) - 2*coef(2, 4, j);          
         coef(4,3,j) = a + b + c;
 
-        a = hx*fx_dxdy(1,2,k+dist+1) - 2*(fx_dxdy(1,1,k+dist+1) + fx_dxdy(1,1,k));
-        b = 2*(fx_dxdy(1,1,k+1) + fx_dxdy(1,1,k+dist));
-        c = -3*coef(4,3,j);
-        coef(4,4,j) = (a + b + c)/3;
+        a = hx*fx_dxdy(1, 2, k + dist + 1) -2*(fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k) - fx_dxdy(1, 1, k + 1) - fx_dxdy(1, 1, k + dist));
+        b = -coef(2, 1, j) + coef(2, 2, j) + coef(2, 3, j) + coef(2, 4, j);
+        c = (a + b)/3;
+        coef(4, 4, j) = c - coef(4, 3, j); 
 
         if (max_line < nx)
             k = k + dist;
@@ -137,9 +279,7 @@ end
 
 function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
 
-    i = 1;
     j = 2;
-    init = 0;
     found = false;
     
     while(j <= nx+1 && !found)
@@ -163,6 +303,8 @@ function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
 
     w = (x - (sqxmax - hx))/hx;
     z = (y - (sqymax - hy))/hy;
+
+    ind = int32(ind);
 
     ret = [1, w, w^2, w^3]*coef(:,:,ind)*[1; z; z^2; z^3];
 end
