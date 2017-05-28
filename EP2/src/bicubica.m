@@ -245,25 +245,26 @@ function coef = constroiv (nx, ny, ax, bx, ay, by, points, fx_dxdy)
         coef(4, 1, j) = 2*(fx_dxdy(1, 1, k) - fx_dxdy(1, 1, k + dist)) + hx*(fx_dxdy(1, 2, k) + fx_dxdy(1, 2, k + dist));
         coef(4, 2, j) = 2*hy*(fx_dxdy(2, 1, k) - fx_dxdy(2, 1, k + dist)) + hx*hy*(fx_dxdy(2, 2, k) + fx_dxdy(2, 2, k + dist));
 
-        a = 3*hy*fx_dxdy(2, 1, k + dist + 1) - hx*hy*fx_dxdy(2, 2, k + dist + 1) - 2*(fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k));
-        b = 2*(fx_dxdy(1, 1, k + 1) + fx_dxdy(1, 1, k + dist)) - 3*(coef(1, 2, j) + 2* coef(1, 3, j) + 3*coef(1, 4, j));
-        c = coef(3,2,j) - 2*coef(2,3,j) - 4*coef(2,4,j);
-        coef(3, 4, j) = a + b + c;
+        a = fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k) - fx_dxdy(1, 1, k + 1) - fx_dxdy(1, 1, k + dist);
+        b = coef(2, 2, j) + coef(2, 3, j) + coef(2, 4, j) + coef(3, 2, j) + coef(4, 2, j);
+	eq_4 = a - b;
 
-        a = fx_dxdy(1,1,k+dist+1) + fx_dxdy(1,1,k) - fx_dxdy(1,1,k+1);
-        b = -fx_dxdy(1,1,k+dist) - coef(2,2,j) - coef(2,3,j);
-        c = -coef(2,4,j) - coef(3,2,j) - coef(3,4,j);
-        coef(3,3,j) = a + b + c;
+        a = hx*fx_dxdy(1, 2, k + dist + 1) - coef(2, 1, j) - coef(2, 2, j) - coef(2, 3, j) - coef(2, 4, j) ;
+        b = 2*coef(3, 1, j) + 2*coef(3, 2, j) + 3*coef(4, 1, j) + 3*coef(4, 2, j);
+        eq_8 = a - b;
 
-        a = 2*(hy*fx_dxdy(2, 1, k + dist +1) - fx_dxdy(1, 1, k + dist + 1) - fx_dxdy(1, 1, k) + fx_dxdy(1, 1, k + 1) + fx_dxdy(1, 1, k + dist));
-        b = hx*fx_dxdy(1, 2, k + dist + 1) - hx*hy*fx_dxdy(2, 2, k + dist + 1);
-        c = -2*coef(1, 2, j) - coef(2, 1, j) + coef(4, 2, j) - 4*coef(1, 3, j) - coef(2, 3, j) - 6*coef(1, 4, j) - 2*coef(2, 4, j);          
-        coef(4,3,j) = a + b + c;
+        a = hy*fx_dxdy(2, 1, k + dist + 1) - coef(1, 2, j) - coef(2, 2, j) - coef(3, 2, j) - coef(4, 2, j);
+        b = 2*coef(1, 3, j) + 2*coef(2, 3, j) + 3*coef(1, 4, j) + 3*coef(2, 4, j);
+        eq_12 = a - b;
 
-        a = hx*fx_dxdy(1, 2, k + dist + 1) -2*(fx_dxdy(1, 1, k + dist + 1) + fx_dxdy(1, 1, k) - fx_dxdy(1, 1, k + 1) - fx_dxdy(1, 1, k + dist));
-        b = -coef(2, 1, j) + coef(2, 2, j) + coef(2, 3, j) + coef(2, 4, j);
-        c = (a + b)/3;
-        coef(4, 4, j) = c - coef(4, 3, j); 
+        a = hx*hy*fx_dxdy(2, 2, k + dist + 1) - coef(2, 2, j) - 2*coef(3, 2, j);
+        b = 3*coef(4, 2, j) + 2*coef(2, 3, j) + 3*coef(2, 4, j);
+        eq_16 = a - b;
+
+        coef(4, 4, j) = eq_16 - 2*eq_12 - 2*(eq_8 - 2*eq_4);
+        coef(4, 3, j) = eq_8 - 2*eq_4 - coef(4, 4, j);
+        coef(3, 4, j) = 3*eq_12 - eq_16 -2*(3*eq_4 - eq_8); 
+        coef(3, 3, j) = 3*eq_4 - eq_8 - coef(3, 4, j);
 
         if (max_line < nx)
             k = k + dist;
