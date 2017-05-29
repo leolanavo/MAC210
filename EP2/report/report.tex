@@ -8,6 +8,8 @@
 \usepackage{amssymb}
 \usepackage{indentfirst}
 \usepackage{graphicx}
+\usepackage[export]{adjustbox}
+\usepackage{subcaption}
 \renewcommand{\rmdefault}{ptm}
 
 \title{Relatório do EP2}
@@ -16,6 +18,12 @@
 
 \begin{document}
 \maketitle
+
+\section*{Introdução}
+Nosso programa implementa dois métodos de interpolação por partes para funções bivariadas, interpolação bicúbica e interpolação bilinear, para as funções:
+$$f(x, y) = x + y$$ 
+$$g(x, y) = sen(x - y)$$
+$$h(x, y) = (x^2 - y^2)^2$$
 
 \section*{Caso Bilinear}
 Definindo 
@@ -276,5 +284,172 @@ Resolvendo este sistema, temos que:
     h_x h_y\left(\frac{\partial^2 f}{\partial x \partial y}(x_i, y_j) + \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_j)\right)
     \tag{28}
 \end{align}
+
+Usando as condições $4$, $8$, $12$ e $16$, obtemos o sistema:
+\begin{align*}
+    \begin{cases}
+    a_{22} + a_{23} + a_{32} + a_{33} = f(x_{i+1}, y_{j+1}) + f(x_i, y_j) - f(x_{i+1}, y_j) - f(x_i, y_{j+1}) - a_{11} - a_{12} - a_{13} - a_{21} \\
+    2a_{22} + 2a_{23} + 3a_{32} + 3a_{33} = h_x\frac{\partial f}{\partial x}(x_{i+1}, y_{j+1}) - a_{10} - a_{11} - a_{12} - a_{13} - 2a_{20} - 2a_{21} - 3a_{30} - 3a_{31} \\
+    2a_{22} + 3a_{23} + 2a_{32} + 3a_{33} = h_y\frac{\partial f}{\partial y}(x_{i+1}, y_{j+1}) - a_{01} - a_{11} - a_{21} - a_{31} - 2a_{02} - 2a_{12} - 3a_{03} - 3a_{13} \\
+    4a_{22} + 6a_{23} + 6a_{32} + 9a_{33} = h_x h_y \frac{\partial^2 f}{\partial x \partial y}(x_{i+1}, y_{j+1}) - a_{11} - 2a_{21} - 3a_{31} - 2a_{12} - 3a_{13}
+    \end{cases}
+\end{align*}
+
+Nomeando as equações do sistema como \textit{eq4}, \textit{eq8}, \textit{eq12} e \textit{eq16}, respectivamente em sua ordem de aparição, temos que:
+\begin{align*}
+    \begin{cases}
+    a_{22} = 3eq4 - eq8 - a_{23} \\
+    a_{23} = 3eq12 - eq16 - 2(3eq4 - eq8)\\
+    a_{32} =  eq8 - 2eq4 - a_{33}\\
+    a_{33} = eq16 - 2eq12 - 2(eq8 - 2eq4)
+    \end{cases}
+\end{align*}
+
+\section*{Funcionalidades do Programa}
+\subsection*{interpolate\_points}
+    Recebe as coordenadas dos pontos inicial e final da malha, quantos pontos no eixo \textit{x}, equivalente ao número de colunas da matriz que representa a malha, e quantos pontos no eixo \textit{y}, ou seja, o número de linhas da matriz representativa. Retorna uma matriz com dimensões $(n_y + 1) \times 2 \times (n_x + 1)$ que representa a malha, na qual os números na primeira coluna correspondem ao \textit{x}, e da segunda, ao \textit{y}.
+
+\subsection*{grid}
+    Cria os eixos necessários para realizar os plottings. Em especial, o eixo $z$ possui duas versões, os valores da função original, e os da função interpoladora.
+
+\subsection*{find\_values}
+    Calcula os valores de uma função \textit{f} nos pontos da malha, achados pela função \textit{interpolate\_points}. Retorna uma matriz com dimensões $(n_y + 1) \times 1 \times (n_x + 1)$ com os resultados.
+    
+\subsection*{constroiv}
+    Cria e insere os coeficientes com os valores em acordo com as equações deduzidas no relatório em uma matriz $2 \times 2 \times (n_x*n_y)$. Estes coeficientes são organizados de acordo com o ponto mais à direita e abaixo do quadrado que contém o ponto a ser calculado.
+    
+\subsection*{avaliav}
+    Primeiramente usa o ponto superior direito de todo quadrado na malha pra determinar em qual retângulo da malha o ponto a ser cálculado está contido. Usa os coeficientes achados na função \textit{constroiv}.
+    
+\section*{Aviso}
+    Caso não consiga visualizar os plottings, o \textit{toolkit gnuplot} precisa ser inicializado 
+    através do comando: \textit{graphics\_toolkit ("gnuplot")}.
+    
+\section*{Imagens dos Gráficos}
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f1.png}
+\caption{f(x,y) = x + y}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f2.png}
+\caption{g(x,y) = sen(x - y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f3.png}
+\caption{h(x,y) = $(x^2 - y^2)^2$}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f1_v_bilinear.png}
+\caption{Interpolação bilinear de f(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f1_bilinear_error.png}
+\caption{Erro da interpolação bilinear de f(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f2_bilinear_v.png}
+\caption{Interpolação bilinear de g(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f2_bilinear_error.png}
+\caption{Erro da interpolação bilinear de g(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f3_bilinear_v.png}
+\caption{Interpolação bilinear de h(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.3]{f3_bilinear_error.png}
+\caption{Erro da interpolação bilinear de h(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f1_bicubica_v.png}
+\caption{Interpolação bicúbica de f(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f1_bicubica_error.png}
+\caption{Erro da interpolação bicúbica de f(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f2_bicubica_v.png}
+\caption{Interpolação bicúbica de g(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f2_bicubica_error.png}
+\caption{Erro da interpolação bicúbica de g(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f3_bicubica_v.png}
+\caption{Interpolação bicúbica de h(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f3_bicubica_error.png}
+\caption{Erro da interpolação bicúbica de h(x,y)}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f1_compress_original.png}
+\caption{Malha interpolada a partir de f(x,y) com o tamanho original}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f1_compress_reduced.png}
+\caption{Malha interpolada a partir de f(x,y) com o tamanho reduzido}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f2_compress_original.png}
+\caption{Malha interpolada a partir de g(x,y) com o tamanho original}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f2_compress_reduced.png}
+\caption{Malha interpolada a partir de g(x,y) com o tamanho reduzido}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f3_compress_original.png}
+\caption{Malha interpolada a partir de h(x,y) com o tamanho original}
+\end{figure}
+
+\begin{figure}[!htp]
+\centering
+\includegraphics[scale=0.5]{f3_compress_reduced.png}
+\caption{Malha interpolada a partir de h(x,y) com o tamanho reduzido}
+\end{figure}
 
 \end{document}
