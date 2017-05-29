@@ -33,7 +33,7 @@ function bicubica ()
     if (fun == 1)
         function_data = find_values (nx, ny, points, "f1");
         coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f1", 1);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f1");
         plot(ax_x, ax_y, ax_z);
         title ("Original: f(x,y) = x + y");
         xlabel ("x");
@@ -51,6 +51,15 @@ function bicubica ()
         xlabel ("x");
         ylabel ("y");
         zlabel ("z");
+        
+        figure
+        lim = [];
+        imshow(ax_z_v,lim);
+        title('Imagem gerada pela função interpoladora da Malha Original');
+        original = ((nx + 1)*(ny + 1));
+        discard = nx * ny;
+        disp(["Dos " , num2str(original) , " pontos, a nova malha usará " , num2str(discard) , " pontos"]);
+        draw (discard, nx, ny, ax, bx, ay, by, "f1");
 
         disp("Escolha um ponto da malha para avaliar:");
         x = input("x: ");
@@ -65,7 +74,7 @@ function bicubica ()
     elseif (fun == 2)
         function_data = find_values (nx, ny, points, "f2");
         coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f2", 1);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f2");
          plot(ax_x, ax_y, ax_z);
         title ("Original: f(x,y) = sen(x - y)");
         xlabel ("x");
@@ -83,6 +92,15 @@ function bicubica ()
         xlabel ("x");
         ylabel ("y");
         zlabel ("z");
+        
+        figure
+        lim = [];
+        imshow(ax_z_v,lim);
+        title('Imagem gerada pela função interpoladora da Malha Original');
+        original = ((nx + 1)*(ny + 1));
+        discard = nx * ny;
+        disp(["Dos " , num2str(original) , " pontos, a nova malha usará " , num2str(discard) , " pontos"]);
+        draw (discard, nx, ny, ax, bx, ay, by, "f2");
 
         disp("Escolha um ponto da malha para avaliar:");
         x = input("x: ");
@@ -96,7 +114,7 @@ function bicubica ()
     elseif (fun == 3)
         function_data = find_values (nx, ny, points, "f3");
         coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f3", 1);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f3");
          plot(ax_x, ax_y, ax_z);
         title ("Original: f(x,y) = (x² - y²)²");
         xlabel ("x");
@@ -114,6 +132,15 @@ function bicubica ()
         xlabel ("x");
         ylabel ("y");
         zlabel ("z");
+        
+        figure
+        lim = [];
+        imshow(ax_z_v,lim);
+        title('Imagem gerada pela função interpoladora da Malha Original');
+        original = ((nx + 1)*(ny + 1));
+        discard = nx * ny;
+        disp(["Dos " , num2str(original) , " pontos, a nova malha usará " , num2str(discard) , " pontos"]);
+        draw (discard, nx, ny, ax, bx, ay, by, "f3");
 
         disp("Escolha um ponto da malha para avaliar:");
         x = input("x: ");
@@ -308,4 +335,31 @@ function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
     ind = int32(ind);
 
     ret = [1, w, w^2, w^3]*coef(:,:,ind)*[1; z; z^2; z^3];
+                
+end
+        
+function draw (discard, nx, ny, ax, bx, ay, by, f)
+    
+    hx = (bx - ax)/nx;
+    hy = (by - ay)/ny;
+    
+    ax = ax + hx;
+    bx = bx - hx;
+    ay = ay + hy;
+    by = by - hy;
+    
+    nx = nx - 1;
+    ny = ny - 1;
+    
+    points = interpolate_points (nx, ny, ax, bx, ay, by);
+    function_data = find_values (nx, ny, points, f);
+    coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+    
+    [x_axis, y_axis, z_axis, z_axis_v] = grid (0.05, nx, ny, ax, bx, ay, by, points, coeficientes, f);
+    figure
+    lim = [];
+    imshow(z_axis_v,lim);
+    title('Imagem gerada da Malha Reduzida');
+    
+
 end
