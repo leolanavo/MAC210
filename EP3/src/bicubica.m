@@ -31,9 +31,9 @@ function bicubica ()
     points = interpolate_points (nx, ny, ax, bx, ay, by);
 
     if (fun == 1)
-        function_data = find_values (nx, ny, points, "f1");
+        function_data = find_values (nx, ny, points, "f1", ax, bx, ay, by);
         coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f1");
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(nx, ny, ax, bx, ay, by, points, coeficientes, "f1");
         plot(ax_x, ax_y, ax_z);
         title ("Original: f(x,y) = x + y");
         xlabel ("x");
@@ -67,14 +67,14 @@ function bicubica ()
         disp("Valor da Função Interpoladora:");
         disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
         disp("Valor da Função Original:");
-        [z, zx, zy, zxy] = f1(x, y);
+        z = f1_z(x, y);
         disp(z);
 
 
     elseif (fun == 2)
-        function_data = find_values (nx, ny, points, "f2");
+        function_data = find_values (nx, ny, points, "f2", ax, bx, ay, by);
         coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f2");
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(nx, ny, ax, bx, ay, by, points, coeficientes, "f2");
         plot(ax_x, ax_y, ax_z);
         title ("Original: f(x,y) = sen(x - y)");
         xlabel ("x");
@@ -114,14 +114,14 @@ function bicubica ()
         disp("Valor da Função Interpoladora:");
         disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
         disp("Valor da Função Original:");
-        [z, zx, zy, zxy] = f2(x, y);
+        z = f2_z(x, y);
         disp(z);
 
     elseif (fun == 3)
-        function_data = find_values (nx, ny, points, "f3");
+        function_data = find_values (nx, ny, points, "f3", ax, bx, ay, by);
         coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(0.05, nx, ny, ax, bx, ay, by, points, coeficientes, "f3");
-         plot(ax_x, ax_y, ax_z);
+        [ax_x, ax_y, ax_z, ax_z_v] = grid(nx, ny, ax, bx, ay, by, points, coeficientes, "f3");
+        plot(ax_x, ax_y, ax_z);
         title ("Original: f(x,y) = (x² - y²)²");
         xlabel ("x");
         ylabel ("y");
@@ -154,7 +154,7 @@ function bicubica ()
         disp("Valor da Função Interpoladora:");
         disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
         disp("Valor da Função Original:");
-        [z, zx, zy, zxy] = f3(x, y);
+        z = f3_z(x, y);
         disp(z);
     endif
 end
@@ -224,8 +224,14 @@ function [xdf, ydf, xydf] = aproxdf (x, y, ax, bx, ay, by, hx, hy, f)
   %Lado Esquerdo
   if (x == ax)
     if (y == ay)
+        xdf = 0;
+        ydf = 0;
+        xydf = 0;
 
     else if(y == by)
+        xdf = 0;
+        ydf = 0;
+        xydf = 0;
 
     else
       xdf = (4*str2func(f)(x + hx, y) - str2func(f)(x + 2*hx, y) - 3*str2func(f)(x, y))/2*hx;
@@ -236,8 +242,14 @@ function [xdf, ydf, xydf] = aproxdf (x, y, ax, bx, ay, by, hx, hy, f)
   %Lado Direito     
   else if (x == bx)
     if (y == ay)
+        xdf = 0;
+        ydf = 0;
+        xydf = 0;
 
     else if(y == by)
+        xdf = 0;
+        ydf = 0;
+        xydf = 0;
 
     else
       xdf = (str2func(f)(x - 2*hx, y) - 4*str2func(f)(x - hx, y) + 3*str2func(f)(x, y))/2*hx;
@@ -266,16 +278,19 @@ function [xdf, ydf, xydf] = aproxdf (x, y, ax, bx, ay, by, hx, hy, f)
 end
 
 
-function fx_dxdy = find_values (nx, ny, points, f)
+function fx_dxdy = find_values (nx, ny, points, f, ax, bx, ay, by)
 
     max_points = (nx + 1)*(ny + 1);
     fx_dxdy = zeros(2, 2, max_points);
+    f_z = strcat(f, "_z");
+    hx = (bx - ax)/nx;
+    hy = (by - ay)/ny;
     k = 1;
     
     for i = 1 : nx + 1
         for j = 1 : ny + 1
 
-	    [z, zx, zy, zxy] =  str2func(f)(points(j, 1, i), points(j, 2, i));
+	    [z, zx, zy, zxy] =  str2func(f)(points(j, 1, i), points(j, 2, i), ax, bx, ay, by, hx, hy, f_z);
             
 	    fx_dxdy(1, 1, k) = z;
             fx_dxdy(1, 2, k) = zx;
