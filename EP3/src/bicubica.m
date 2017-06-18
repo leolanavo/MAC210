@@ -8,171 +8,112 @@
 
 function bicubica ()
 
-    disp("Funções disponíveis:");
+    disp("Funções que serão testadas:");
     disp(" 1: f(x,y) = x + y");
     disp(" 2: f(x,y) = sen(x - y)");
     disp(" 3: f(x,y) = (x² - y²)²");
-    fun = input("Escolha a função pelo seu número correspondente: ");
+
+    image_1 = imread("folhas.jpg");
+    info_1 = imfinfo("folhas.jpg");
+
+    image_2 = imread("bolas.jpg");
+    info_2 = imfinfo("bolas.jpg");
+
+    %Comente qualquer umas das funções "testing" ou "draw" abaixo para reduzir o número de imagens.
+
+    testing(info_1, -2, 2, -2, 2, 10, 10, "f1", "f1_z");
+    testing(info_1, -2, 2, -2, 2, 10, 10, "f2", "f2_z");
+    testing(info_1, -2, 2, -2, 2, 10, 10, "f3", "f3_z");
+
+    testing(info_1, -2, 2, -2, 2, 20, 20, "f1", "f1_z");
+    testing(info_1, -2, 2, -2, 2, 20, 20, "f2", "f2_z");
+    testing(info_1, -2, 2, -2, 2, 20, 20, "f3", "f3_z");
+
+    testing(info_1, -2, 2, -2, 2, 40, 40, "f1", "f1_z");
+    testing(info_1, -2, 2, -2, 2, 40, 40, "f2", "f2_z");
+    testing(info_1, -2, 2, -2, 2, 40, 40, "f3", "f3_z");
+
+    draw(image_1, info_1, 5, 5, 350, 400, 69, 79);
+    draw(image_1, info_1, 5, 5, 350, 400, 115, 79);
+    draw(image_1, info_1, 5, 5, 350, 400, 115, 395);
+
+    draw(image_2, info_2, 1, 2, 427, 640, 71, 58);
+    draw(image_2, info_2, 1, 2, 427, 640, 142, 58);
+    draw(image_2, info_2, 1, 2, 427, 640, 213, 319);
+end
+
+function testing (info, ax, bx, ay, by, nx, ny, f, f_z)
     
-    disp("Passe os parâmetros que definirão a malha [ax, bx] x [ay, by],")
-    disp("de maneira que ax < bx e ay < by.")
-    ax = input("Escolha ax: ");
-    bx = input("Escolha bx: ");
-    ay = input("Escolha ay: ");
-    by = input("Escolha by: ");
-  
-    disp("Interpolarei (nx + 1)(ny + 1) pontos contidos na malha passada")
-    nx = input("Escolha nx: ");
-    ny = input("Escolha ny: ");
+    control = zeros(info.Height, info.Width);
 
     hx = (bx - ax)/nx;
     hy = (by - ay)/ny;
 
     points = interpolate_points (nx, ny, ax, bx, ay, by);
-
-    if (fun == 1)
-        function_data = find_values (nx, ny, points, "f1", ax, bx, ay, by);
-        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(nx, ny, ax, bx, ay, by, points, coeficientes, "f1_z");
-        plot(ax_x, ax_y, ax_z);
+    [function_data, error_dx, error_dy, error_dxy] = find_values (control, control, 1, nx, ny, points, f, ax, bx, ay, by);
+    coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
+    
+    [ax_x, ax_y, ax_z, ax_z_v] = grid(control, control, 0, nx, ny, ax, bx, ay, by, points, coeficientes, f_z);
+    plot(ax_x, ax_y, ax_z);
+    
+    if (strcmp(f, "f1") == 1)
         title ("Original: f(x,y) = x + y");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        figure
-	plot(ax_x, ax_y, ax_z_v);
-        title ("Interpolated");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        figure
-        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
-        title ("Error");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        
-        figure
-        lim = [];
-        imshow(ax_z_v,lim);
-        title('Imagem gerada pela função interpoladora da Malha Original');
-        original = ((nx + 1)*(ny + 1));
-        discard = nx * ny;
-        disp(["Dos " , num2str(original) , " pontos, a nova malha usará " , num2str(discard) , " pontos"]);
-        draw (discard, nx, ny, ax, bx, ay, by, "f1");
-
-        disp("Escolha um ponto da malha para avaliar:");
-        x = input("x: ");
-        y = input("y: ");
-        disp("Valor da Função Interpoladora:");
-        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
-        disp("Valor da Função Original:");
-        z = f1_z(x, y);
-        disp(z);
-
-
-    elseif (fun == 2)
-        function_data = find_values (nx, ny, points, "f2", ax, bx, ay, by);
-        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(nx, ny, ax, bx, ay, by, points, coeficientes, "f2_z");
-        plot(ax_x, ax_y, ax_z);
+    elseif (strcmp(f, "f2") == 1)
         title ("Original: f(x,y) = sen(x - y)");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        figure
-	plot(ax_x, ax_y, ax_z_v);
-        title ("Interpolated");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        figure
-        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
-        title ("Error");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        
-        figure
-        lim = [];
-        imshow(ax_z,lim);
-        title('Imagem gerada pela função da Malha Original');
-
-        figure
-        lim = [];
-        imshow(ax_z_v,lim);
-        title('Imagem gerada pela função interpoladora da Malha Original');
-
-        original = ((nx + 1)*(ny + 1));
-        discard = nx * ny;
-        disp(["Dos " , num2str(original) , " pontos, a nova malha usará " , num2str(discard) , " pontos"]);
-        draw (discard, nx, ny, ax, bx, ay, by, "f2");
-
-        disp("Escolha um ponto da malha para avaliar:");
-        x = input("x: ");
-        y = input("y: ");
-        disp("Valor da Função Interpoladora:");
-        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
-        disp("Valor da Função Original:");
-        z = f2_z(x, y);
-        disp(z);
-
-    elseif (fun == 3)
-        function_data = find_values (nx, ny, points, "f3", ax, bx, ay, by);
-        coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-        [ax_x, ax_y, ax_z, ax_z_v] = grid(nx, ny, ax, bx, ay, by, points, coeficientes, "f3_z");
-        plot(ax_x, ax_y, ax_z);
+    else
         title ("Original: f(x,y) = (x² - y²)²");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        figure
-	plot(ax_x, ax_y, ax_z_v);
-        title ("Interpolated");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        figure
-        plot(ax_x, ax_y, abs(ax_z - ax_z_v));
-        title ("Error");
-        xlabel ("x");
-        ylabel ("y");
-        zlabel ("z");
-        
-        figure
-        lim = [];
-        imshow(ax_z_v,lim);
-        title('Imagem gerada pela função interpoladora da Malha Original');
-        original = ((nx + 1)*(ny + 1));
-        discard = nx * ny;
-        disp(["Dos " , num2str(original) , " pontos, a nova malha usará " , num2str(discard) , " pontos"]);
-        draw (discard, nx, ny, ax, bx, ay, by, "f3");
-
-        disp("Escolha um ponto da malha para avaliar:");
-        x = input("x: ");
-        y = input("y: ");
-        disp("Valor da Função Interpoladora:");
-        disp(avaliav(x, y, nx, ny, points, hx, hy, coeficientes));
-        disp("Valor da Função Original:");
-        z = f3_z(x, y);
-        disp(z);
     endif
+
+    xlabel ("x");
+    ylabel ("y");
+    zlabel ("f(x,y)");
+    
+    figure
+	plot(ax_x, ax_y, ax_z_v);
+    title ("Interpolated");
+    xlabel ("x");
+    ylabel ("y");
+    zlabel ("s(x, y)");
+    figure
+    plot(ax_x, ax_y, abs(ax_z - ax_z_v));
+    title ("Interpolation Error");
+    xlabel ("x");
+    ylabel ("y");
+    zlabel ("f(x,y) - s(x, y)");
+
+    figure
+    plot(ax_x, ax_y, error_dx);
+    title ("df/dx Error");
+    xlabel ("x");
+    ylabel ("y");
+    zlabel ("dx - aprox_dx");
+    figure
+    plot(ax_x, ax_y, error_dy);
+    title ("df/dy Error");
+    xlabel ("x");
+    ylabel ("y");
+    zlabel ("dy - aprox_dy");
+    figure
+    plot(ax_x, ax_y, error_dxy);
+    title ("df/dxdy Error");
+    xlabel ("x");
+    ylabel ("y");
+    zlabel ("dxy - aprox_dxdy");
 end
 
-function [z, zx, zy, zxy] = f1(x, y, ax, bx, ay, by, hx, hy, f)
+function [z, zx, zy, zxy] = f1(image, control, x, y, ax, bx, ay, by, hx, hy, f)
     z = x + y;
-    [zx, zy, zxy] = aproxdf(x, y, ax, bx, ay, by, hx, hy, f);    
+    [zx, zy, zxy] = aproxdf(image, control, x, y, ax, bx, ay, by, hx, hy, f);    
 end
 
-function [z, zx, zy, zxy] = f2(x, y, ax, bx, ay, by,hx, hy, f)
+function [z, zx, zy, zxy] = f2(image, control, x, y, ax, bx, ay, by, hx, hy, f)
     z = sin(x - y);
-    [zx, zy, zxy] = aproxdf(x, y, ax, bx, ay, by, hx, hy, f);
+    [zx, zy, zxy] = aproxdf(image, control, x, y, ax, bx, ay, by, hx, hy, f);
 end 
 
-function [z, zx, zy, zxy] = f3(x, y, ax, bx, ay, by, f)
+function [z, zx, zy, zxy] = f3(image, control, x, y, ax, bx, ay, by, hx, hy, f)
     z = (x^2-y^2)^2;
-    [zx, zy, zxy] = aproxdf(x, y, ax, bx, ay, by, hx, hy, f);
-  
+    [zx, zy, zxy] = aproxdf(image, control, x, y, ax, bx, ay, by, hx, hy, f);  
 end
 
 
@@ -188,129 +129,201 @@ function z = f3_z(x, y)
     z = (x^2-y^2)^2;  
 end
 
+function [zx, zy, zxy] = f1_dz(x, y)
+    zx = zy = 1;
+    zxy = 0;
+end
 
-%Fórmulas:
+function [zx, zy, zxy] = f2_dz(x, y)
+    zx = cos(x - y);
+    zy = - cos(x - y);
+    zxy = sin(x - y);
+end
 
-%Xdf
-%    centrada: (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/2*hx;
-%    frente: (4*str2func(f)(x + hx, y) - str2func(f)(x + 2*hx, y) - 3*str2func(f)(x, y))/2*hx;
-%    trás: (str2func(f)(x - 2*hx, y) - 4*str2func(f)(x - hx, y) + 3*str2func(f)(x, y))/2*hx; 
-
-%Ydf
-%    centrada: (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/2*hy;
-%    frente(cima): (4*str2func(f)(x, y + hy) - str2func(f)(x, y + 2*hy) - 3*str2func(f)(x, y))/2*hy;
-%    trás(baixo): (str2func(f)(x, y - 2*hy) - 4*str2func(f)(x, y - hy) + 3*str2func(f)(x, y))/2*hy;
-
-%XYdf
-%    centro: (str2func(f)(x + hx, y + hy) + str2func(f)(x - hx, y - hy) - str2func(f)(x - hx, y + hy) - str2func(f)(x + hx, y - hy))/4*hx*hy;
-    
-%    lado esquerdo:(4*(str2func(f)(x + hx, y + hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + 2*hx, y - hy) - str2func(f)(x + 2*hx, y + hy) - 3*(str2func(f)(x, y + hy) - str2func(f)(x, y - hy)))/4*hx*hy; 
-%    lado direito: (4*(str2func(f)(x - hx, y - hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - 2*hx, y + hy) - str2func(f)(x - 2*hx, y - hy) + 3*(str2func(f)(x, y + hy) - str2func(f)(x, y - hy)))/4*hx*hy;
-%   lado cima: (4*(str2func(f)(x - hx, y - hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + hx, y - 2*hy) - str2func(f)(x - hx, y - 2*hy) + 3*(str2func(f)(x + hx, y) - str2func(f)(x - hx, y)))/4*hx*hy;
-%    lado baixo: (4*(str2func(f)(x + hx, y + hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - hx, y + 2*hy) - str2func(f)(x + hx, y + 2*hy) - 3*(str2func(f)(x + hx, y) - str2func(f)(x - hx, y)))/4*hx*hy;
-%    
-%    canto esquerdo cima:
-%    canto esquerdo baixo:
-%    canto direito cima:
-%    canto direito baixo:
+function [zx, zy, zxy] = f3_dz(x, y)
+    zx = 4*x*(x^2 - y^2);
+    zy = -4*y*(x^2 - y^2);
+    zxy = -8*x*y;
+end
      
+function [xdf, ydf, xydf] = aproxdf (image, control, x, y, ax, bx, ay, by, hx, hy, f)
+  
+    if (image == control)
+        %Lado Esquerdo
+        if (x == ax)
 
-function [xdf, ydf, xydf] = aproxdf (x, y, ax, bx, ay, by, hx, hy, f)
+            xdf = (4*str2func(f)(x + hx, y) - str2func(f)(x + 2*hx, y) - 3*str2func(f)(x, y))/(2*hx);
+       
+            if (y == ay)
+                %Canto Inferior
+                ydf = (4*str2func(f)(x, y + hy) - str2func(f)(x, y + 2*hy) - 3*str2func(f)(x, y))/(2*hy);
+                xydf = (8*(-str2func(f)(x + hx, y) - str2func(f)(x, y + hy) + str2func(f)(x + hx, y + hy)) - str2func(f)(x + 2*hx, y + 2*hy) + str2func(f)(x + 2*hx, y) + str2func(f)(x, y + 2*hy) + 7*str2func(f)(x, y))/(4*hx*hy);
 
-  %Lado Esquerdo
-    if (x == ax)
-        if (y == ay)
-            xdf = 0;
-            ydf = 0;
-            xydf = 0;
+            elseif (y == by)
+                %Canto Superior
+                ydf = (str2func(f)(x, y - 2*hy) - 4*str2func(f)(x, y - hy) + 3*str2func(f)(x, y))/(2*hy);
+                xydf = (8*(str2func(f)(x + hx, y) + str2func(f)(x, y - hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + 2*hx, y - 2*hy) - str2func(f)(x + 2*hx, y) - str2func(f)(x, y - 2*hy) - 7*str2func(f)(x, y))/(4*hx*hy);
 
-        elseif (y == by)
-            xdf = 0;
-            ydf = 0;
-            xydf = 0;
-
-        else
-            xdf = (4*str2func(f)(x + hx, y) - str2func(f)(x + 2*hx, y) - 3*str2func(f)(x, y))/2*hx;
-            ydf = (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/2*hy;
-            xydf = (4*(str2func(f)(x + hx, y + hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + 2*hx, y - hy) - str2func(f)(x + 2*hx, y + hy) - 3*(str2func(f)(x, y + hy) - str2func(f)(x, y - hy)))/4*hx*hy;
-        endif
+            else
+                ydf = (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/(2*hy);
+                xydf = (4*(str2func(f)(x + hx, y + hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + 2*hx, y - hy) - str2func(f)(x + 2*hx, y + hy) - 3*(str2func(f)(x, y + hy) - str2func(f)(x, y - hy)))/(4*hx*hy);
+            endif
     
-  %Lado Direito     
-    elseif (x == bx)
-        if (y == ay)
-            xdf = 0;
-            ydf = 0;
-            xydf = 0;
+        %Lado Direito     
+        elseif (x == bx)
+            xdf = (str2func(f)(x - 2*hx, y) - 4*str2func(f)(x - hx, y) + 3*str2func(f)(x, y))/(2*hx);
 
-        elseif(y == by)
-            xdf = 0;
-            ydf = 0;
-            xydf = 0;
+            %Canto Inferior
+            if (y == ay)
+                ydf = (4*str2func(f)(x, y + hy) - str2func(f)(x, y + 2*hy) - 3*str2func(f)(x, y))/(2*hy);
+                xydf = (8*(str2func(f)(x - hx, y) + str2func(f)(x, y + hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - 2*hx, y + 2*hy) - str2func(f)(x - 2*hx, y) - str2func(f)(x, y + 2*hy) - 7*str2func(f)(x, y))/(4*hx*hy);
         
+            %Canto Superior    
+            elseif(y == by)
+                ydf = (str2func(f)(x, y - 2*hy) - 4*str2func(f)(x, y - hy) + 3*str2func(f)(x, y))/(2*hy);
+                xydf = (8*(-str2func(f)(x - hx, y) - str2func(f)(x, y - hy) + str2func(f)(x - hx, y - hy)) - str2func(f)(x - 2*hx, y - 2*hy) + str2func(f)(x - 2*hx, y) + str2func(f)(x, y - 2*hy) + 7*str2func(f)(x, y))/(4*hx*hy);
+        
+            else
+                ydf = (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/(2*hy);
+                xydf = (4*(str2func(f)(x - hx, y - hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - 2*hx, y + hy) - str2func(f)(x - 2*hx, y - hy) + 3*(str2func(f)(x, y + hy) - str2func(f)(x, y - hy)))/(4*hx*hy);
+            endif
+   
+        %Lado Baixo
+        elseif (y == ay)
+            xdf = (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/(2*hx);
+            ydf = (4*str2func(f)(x, y + hy) - str2func(f)(x, y + 2*hy) - 3*str2func(f)(x, y))/(2*hy);
+            xydf = (4*(str2func(f)(x + hx, y + hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - hx, y + 2*hy) - str2func(f)(x + hx, y + 2*hy) - 3*(str2func(f)(x + hx, y) - str2func(f)(x - hx, y)))/(4*hx*hy);
+
+        %Lado Cima
+        elseif (y == by)
+            xdf = (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/(2*hx);
+            ydf = (str2func(f)(x, y - 2*hy) - 4*str2func(f)(x, y - hy) + 3*str2func(f)(x, y))/(2*hy);
+            xydf = (4*(str2func(f)(x - hx, y - hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + hx, y - 2*hy) - str2func(f)(x - hx, y - 2*hy) + 3*(str2func(f)(x + hx, y) - str2func(f)(x - hx, y)))/(4*hx*hy);
 
         else
-            xdf = (str2func(f)(x - 2*hx, y) - 4*str2func(f)(x - hx, y) + 3*str2func(f)(x, y))/2*hx;
-            ydf = (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/2*hy;
-            xydf = (4*(str2func(f)(x - hx, y - hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - 2*hx, y + hy) - str2func(f)(x - 2*hx, y - hy) + 3*(str2func(f)(x, y + hy) - str2func(f)(x, y - hy)))/4*hx*hy;
+            xdf = (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/(2*hx);
+            ydf = (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/(2*hy);
+            xydf = (str2func(f)(x + hx, y + hy) + str2func(f)(x - hx, y - hy) - (str2func(f)(x - hx, y) + str2func(f)(x + hx, y)) - (str2func(f)(x, y - hy) + str2func(f)(x, y + hy)) + 2*str2func(f)(x, y))/(2*hx*hy);
         endif
-   
-  %Lado Baixo
-    elseif (y == ay)
-        xdf = (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/2*hx;
-        ydf = (4*str2func(f)(x, y + hy) - str2func(f)(x, y + 2*hy) - 3*str2func(f)(x, y))/2*hy;
-        xydf = (4*(str2func(f)(x + hx, y + hy) - str2func(f)(x - hx, y + hy)) + str2func(f)(x - hx, y + 2*hy) - str2func(f)(x + hx, y + 2*hy) - 3*(str2func(f)(x + hx, y) - str2func(f)(x - hx, y)))/4*hx*hy;
-
-  %Lado Cima
-    elseif (y == by)
-        xdf = (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/2*hx;
-        ydf = (str2func(f)(x, y - 2*hy) - 4*str2func(f)(x, y - hy) + 3*str2func(f)(x, y))/2*hy;
-        xydf = (4*(str2func(f)(x - hx, y - hy) - str2func(f)(x + hx, y - hy)) + str2func(f)(x + hx, y - 2*hy) - str2func(f)(x - hx, y - 2*hy) + 3*(str2func(f)(x + hx, y) - str2func(f)(x - hx, y)))/4*hx*hy;
 
     else
-        xdf = (str2func(f)(x + hx, y) - str2func(f)(x - hx, y))/2*hx;
-        ydf = (str2func(f)(x, y + hy) - str2func(f)(x, y - hy))/2*hy;
-        xydf = (str2func(f)(x + hx, y + hy) + str2func(f)(x - hx, y - hy) - str2func(f)(x - hx, y + hy) - str2func(f)(x + hx, y - hy))/4*hx*hy;
-    endif
+        %Lado Esquerdo
+        if (x == ax)
 
+            xdf = (4*str2func(f)(image, x + hx, y) - str2func(f)(image, x + 2*hx, y) - 3*str2func(f)(image, x, y))/(2*hx);
+       
+            if (y == ay)
+                %Canto Inferior
+                ydf = (4*str2func(f)(image, x, y + hy) - str2func(f)(image, x, y + 2*hy) - 3*str2func(f)(image, x, y))/(2*hy);
+                xydf = (8*(-str2func(f)(image, x + hx, y) - str2func(f)(image, x, y + hy) + str2func(f)(image, x + hx, y + hy)) - str2func(f)(image, x + 2*hx, y + 2*hy) + str2func(f)(image, x + 2*hx, y) + str2func(f)(image, x, y + 2*hy) + 7*str2func(f)(image, x, y))/(4*hx*hy);
+
+            elseif (y == by)
+                %Canto Superior
+                ydf = (str2func(f)(image, x, y - 2*hy) - 4*str2func(f)(image, x, y - hy) + 3*str2func(f)(image, x, y))/(2*hy);
+                xydf = (8*(str2func(f)(image, x + hx, y) + str2func(f)(image, x, y - hy) - str2func(f)(image, x + hx, y - hy)) + str2func(f)(image, x + 2*hx, y - 2*hy) - str2func(f)(image, x + 2*hx, y) - str2func(f)(image, x, y - 2*hy) - 7*str2func(f)(image, x, y))/(4*hx*hy);
+
+            else
+                ydf = (str2func(f)(image, x, y + hy) - str2func(f)(image, x, y - hy))/(2*hy);
+                xydf = (4*(str2func(f)(image, x + hx, y + hy) - str2func(f)(image, x + hx, y - hy)) + str2func(f)(image, x + 2*hx, y - hy) - str2func(f)(image, x + 2*hx, y + hy) - 3*(str2func(f)(image, x, y + hy) - str2func(f)(image, x, y - hy)))/(4*hx*hy);
+            endif
+    
+        %Lado Direito     
+        elseif (x == bx)
+            xdf = (str2func(f)(image, x - 2*hx, y) - 4*str2func(f)(image, x - hx, y) + 3*str2func(f)(image, x, y))/(2*hx);
+
+            %Canto Inferior
+            if (y == ay)
+                ydf = (4*str2func(f)(image, x, y + hy) - str2func(f)(image, x, y + 2*hy) - 3*str2func(f)(image, x, y))/(2*hy);
+                xydf = (8*(str2func(f)(image, x - hx, y) + str2func(f)(image, x, y + hy) - str2func(f)(image, x - hx, y + hy)) + str2func(f)(image, x - 2*hx, y + 2*hy) - str2func(f)(image, x - 2*hx, y) - str2func(f)(image, x, y + 2*hy) - 7*str2func(f)(image, x, y))/(4*hx*hy);
+        
+            %Canto Superior    
+            elseif(y == by)
+                ydf = (str2func(f)(image, x, y - 2*hy) - 4*str2func(f)(image, x, y - hy) + 3*str2func(f)(image, x, y))/(2*hy);
+                xydf = (8*(-str2func(f)(image, x - hx, y) - str2func(f)(image, x, y - hy) + str2func(f)(image, x - hx, y - hy)) - str2func(f)(image, x - 2*hx, y - 2*hy) + str2func(f)(image, x - 2*hx, y) + str2func(f)(image, x, y - 2*hy) + 7*str2func(f)(image, x, y))/(4*hx*hy);
+        
+            else
+                ydf = (str2func(f)(image, x, y + hy) - str2func(f)(image, x, y - hy))/(2*hy);
+                xydf = (4*(str2func(f)(image, x - hx, y - hy) - str2func(f)(image, x - hx, y + hy)) + str2func(f)(image, x - 2*hx, y + hy) - str2func(f)(image, x - 2*hx, y - hy) + 3*(str2func(f)(image, x, y + hy) - str2func(f)(image, x, y - hy)))/(4*hx*hy);
+            endif
+   
+        %Lado Baixo
+        elseif (y == ay)
+            xdf = (str2func(f)(image, x + hx, y) - str2func(f)(image, x - hx, y))/(2*hx);
+            ydf = (4*str2func(f)(image, x, y + hy) - str2func(f)(image, x, y + 2*hy) - 3*str2func(f)(image, x, y))/(2*hy);
+            xydf = (4*(str2func(f)(image, x + hx, y + hy) - str2func(f)(image, x - hx, y + hy)) + str2func(f)(image, x - hx, y + 2*hy) - str2func(f)(image, x + hx, y + 2*hy) - 3*(str2func(f)(image, x + hx, y) - str2func(f)(image, x - hx, y)))/(4*hx*hy);
+
+    %Lado Cima
+        elseif (y == by)
+            xdf = (str2func(f)(image, x + hx, y) - str2func(f)(image, x - hx, y))/(2*hx);
+            ydf = (str2func(f)(image, x, y - 2*hy) - 4*str2func(f)(image, x, y - hy) + 3*str2func(f)(image, x, y))/(2*hy);
+            xydf = (4*(str2func(f)(image, x - hx, y - hy) - str2func(f)(image, x + hx, y - hy)) + str2func(f)(image, x + hx, y - 2*hy) - str2func(f)(image, x - hx, y - 2*hy) + 3*(str2func(f)(image, x + hx, y) - str2func(f)(image, x - hx, y)))/(4*hx*hy);
+
+        else
+            xdf = (str2func(f)(image, x + hx, y) - str2func(f)(image, x - hx, y))/(2*hx);
+            ydf = (str2func(f)(image, x, y + hy) - str2func(f)(image, x, y - hy))/(2*hy);
+            xydf = (str2func(f)(image, x + hx, y + hy) + str2func(f)(image, x - hx, y - hy) - (str2func(f)(image, x - hx, y) + str2func(f)(image, x + hx, y)) - (str2func(f)(image, x, y - hy) + str2func(f)(image, x, y + hy)) + 2*str2func(f)(image, x, y))/(2*hx*hy);
+        endif
+    endif
 end
 
 
-function fx_dxdy = find_values (nx, ny, points, f, ax, bx, ay, by)
+function [fx_dxdy, er_dx, er_dy, er_dxy] = find_values (image, control, error, nx, ny, points, f, ax, bx, ay, by)
 
     max_points = (nx + 1)*(ny + 1);
     fx_dxdy = zeros(2, 2, max_points);
+    if (error == 1)
+        er_dx = zeros(nx + 1, ny + 1);
+        er_dy = zeros(nx + 1, ny + 1);
+        er_dxy = zeros(nx + 1, ny + 1);
+        f_dz = strcat(f, "_dz");
+    endif
+
     f_z = strcat(f, "_z");
+
     hx = (bx - ax)/nx;
     hy = (by - ay)/ny;
     k = 1;
     
     for i = 1 : nx + 1
         for j = 1 : ny + 1
-
-	    [z, zx, zy, zxy] =  str2func(f)(points(j, 1, i), points(j, 2, i), ax, bx, ay, by, hx, hy, f_z);
             
-	    fx_dxdy(1, 1, k) = z;
+            [z, zx, zy, zxy] = str2func(f)(image, control, points(j, 1, i), points(j, 2, i), ax, bx, ay, by, hx, hy, f_z);
+	        
+            fx_dxdy(1, 1, k) = z;
             fx_dxdy(1, 2, k) = zx;
             fx_dxdy(2, 1, k) = zy;
             fx_dxdy(2, 2, k) = zxy;
             
+            if (error == 1)
+                [dx, dy, dxdy] = str2func(f_dz)(points(j, 1, i), points(j, 2, i));
+                er_dx(i, j) = abs(dx - zx);
+                er_dy(i, j) = abs(dy - zy);
+                er_dxy(i, j) = abs(dxdy - zxy);
+            endif
+            
             k++;
         endfor
-    endfor
- 
+    endfor 
 end
 
 function plot (x_axis, y_axis, z_axis)
     mesh(x_axis, y_axis, z_axis);
 end
 
-function [x_axis, y_axis, z_axis, z_axis_v] = grid (nx, ny, ax, bx, ay, by, points, coef, f)
-
-    grid_nx = nx;
-    grid_ny = ny;
-
+function [x_axis, y_axis, z_axis, z_axis_v] = grid (image, control, delta, nx, ny, ax, bx, ay, by, points, coef, f)
     hx = (bx - ax)/nx;
     hy = (by - ay)/ny;
+    
+    if (delta == 0)
+        grid_nx = nx;
+        grid_ny = ny;
+        grid_hx = hx;
+        grid_hy = hy;       
+    else
+        grid_nx = (bx - ax)/0.05;
+        grid_ny = (by - ay)/0.05;
+        grid_hx = grid_hy = 0.05;
+    endif
 
     x_axis = zeros(1, grid_nx + 1);
     y_axis = zeros(1, grid_ny + 1);
@@ -318,16 +331,20 @@ function [x_axis, y_axis, z_axis, z_axis_v] = grid (nx, ny, ax, bx, ay, by, poin
     z_axis_v = zeros(grid_nx + 1, grid_ny + 1);
 
     for i = 1  : grid_nx + 1
-	x_axis(i) = ax + (i - 1) * hx;
+	x_axis(i) = ax + (i - 1) * grid_hx;
     endfor
 
     for j = 1 : grid_ny + 1
-	y_axis(j) = ay + (j - 1) * hy;
+	y_axis(j) = ay + (j - 1) * grid_hy;
     endfor
        
     for i = 1 : grid_nx + 1 
 	   for j = 1 : grid_ny + 1
-	        z_axis(i, j) = str2func(f)(x_axis(i), y_axis(j));
+            if (image == control)
+	           z_axis(i, j) = str2func(f)(x_axis(i), y_axis(j));
+            else
+                z_axis(i, j) = str2func(f)(image, x_axis(i), y_axis(j));
+            endif
             z_axis_v(i, j) = avaliav(x_axis(i), y_axis(j), nx, ny, points, hx, hy, coef);
         endfor
     endfor
@@ -438,34 +455,32 @@ function ret = avaliav(x, y, nx, ny, points, hx, hy, coef)
 
     ind = int32(ind);
 
-    ret = [1, w, w^2, w^3]*coef(:,:,ind)*[1; z; z^2; z^3];
-                
+    ret = [1, w, w^2, w^3]*coef(:,:,ind)*[1; z; z^2; z^3];                
+end
+
+function [z,zx,zy,zxy] = pixel_value(image, control, i, j, ax, bx, ay, by, hx, hy, f)
+    
+    z = image(i, j);
+    [zx, zy, zxy] = aproxdf(image, control, i, j, ax, bx, ay, by, hx, hy, f);
+end
+
+function z = pixel_value_z(image, i, j)
+    z = image(i, j);
 end
         
-function draw (discard, nx, ny, ax, bx, ay, by, f)
+function draw (image, info, ax, ay, bx, by, nx, ny)
     
-    hx = (bx - ax)/nx;
-    hy = (by - ay)/ny;
-    
-    ax = ax + hx;
-    bx = bx - hx;
-    ay = ay + hy;
-    by = by - hy;
-    
-    nx = nx - 1;
-    ny = ny - 1;
+    control = zeros(info.Height, info.Width);
 
+    f = "pixel_value";
     f_z = strcat(f, "_z");
     
     points = interpolate_points (nx, ny, ax, bx, ay, by);
-    function_data = find_values (nx, ny, points, f, ax, bx, ay, by);
+    function_data = find_values (image, control, 0, nx, ny, points, f, ax, bx, ay, by);
     coeficientes = constroiv (nx, ny, ax, bx, ay, by, points, function_data);
-    
-    [x_axis, y_axis, z_axis, z_axis_v] = grid (nx, ny, ax, bx, ay, by, points, coeficientes, f_z);
-    figure
+    [x_axis, y_axis, z_axis, z_axis_v] = grid (image, control, 0, nx, ny, ax, bx, ay, by, points, coeficientes, f_z);
     lim = [];
+    figure
     imshow(z_axis_v,lim);
     title('Imagem gerada da Malha Reduzida');
-    
-
 end
