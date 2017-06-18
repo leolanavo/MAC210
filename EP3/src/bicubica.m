@@ -8,6 +8,8 @@
 
 function bicubica ()
 
+    graphics_toolkit("gnuplot");
+
     disp("Funções que serão testadas:");
     disp(" 1: f(x,y) = x + y");
     disp(" 2: f(x,y) = sen(x - y)");
@@ -35,7 +37,7 @@ function bicubica ()
 
     draw(image_1, info_1, 5, 5, 350, 400, 69, 79);
     draw(image_1, info_1, 5, 5, 350, 400, 115, 79);
-    draw(image_1, info_1, 5, 5, 350, 400, 115, 395);
+    draw(image_1, info_1, 6, 2, 350, 400, 172, 199);
 
     draw(image_2, info_2, 1, 2, 427, 640, 71, 58);
     draw(image_2, info_2, 1, 2, 427, 640, 142, 58);
